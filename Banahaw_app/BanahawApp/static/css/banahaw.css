@@ -1,0 +1,54 @@
+
+#background{
+	background: url("img/background.jpg") no-repeat;
+	background-size: 100%;
+	height:800px;
+	width: 100%;
+	}
+.input{
+	-webkit-border-radius: 10px;
+	background-color: rgba(72,70,70,.3);
+	margin-left: 25px;
+	height: 3em !important;
+	font-family: "DK Blue Sheep";
+	width: 27em !important;
+	}
+p{
+	font-family: "Arial";
+	font-weight: 300em;
+	}
+/*body {overflow-y:hidden}*/
+.btn{
+	width: 20em;
+	height: 2.5em;
+	-webkit-border-radius: 10px;
+	margin-left: 7%;
+	font-family: "DK Blue Sheep";
+	}
+.jumbotron{
+	height: 550px;
+	width: 30%;
+	background-color: rgba(255,255,255,.6) !important;
+	padding: 20px;
+	padding-left: auto;
+	margin-top: -45%;
+	position: absolute;
+	margin-left: 35%;
+	-webkit-border-radius: 10px;
+	}
+#error{
+	width: 85%;
+	height: 10%;
+	background-color: rgba(255,0,0,.5);
+	margin-top: 5%;
+	margin-left: 6%;
+	-webkit-border-radius: 10px;
+	}
+
+/*admin page*/
+
+#div1{
+	background-color: white;
+	width: 100%;
+	height: 800px;
+}

@@ -1,0 +1,22 @@
+h3{
+	margin-top: -20px;
+}
+#validation{
+	float: left;
+	width: 30%;
+}
+.input-top{
+	width: 80% !important;
+}
+input{
+	width: 70% !important;
+}
+.form{
+	float: right;
+	height: 700px;
+	width: 70%;
+}
+.alert-top{
+	width: 80%;
+	height: 10%;
+}

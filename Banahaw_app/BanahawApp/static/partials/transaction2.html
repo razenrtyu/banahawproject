@@ -1,0 +1,84 @@
+<head>
+	<link href="css/content/transaction.css" rel="stylesheet">
+
+</head>
+
+<div id="main">
+
+<h3>Walk-In</h3>
+<br>
+
+<div class="form2" ng-show="transac_inputs">
+		<div class="table-responsive">
+            <table class="table table-striped">
+              
+              <tbody>
+
+                <tr>
+                  <td>Name</td>
+                  <td></td>
+                  <td><input class="input form-control" type="text" name="">
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Branch</td>
+                  <td></td>
+                  <td><select class="input form-control" ng-model="selectedbranch" 
+                    ng-change="OnChangeofbranch(selectedbranch)" ng-options="b.branch_name for b in branches">
+                    </select></td>
+                </tr>
+
+                <tr>
+                  <td>Services</td>
+                  <td></td>
+                  <td>
+                    <select class="input form-control" ng-model="selectedservicetype" 
+                    ng-change="OnChangeofServices(selectedservicetype)" ng-options="ST for ST in servicestype">
+                    </select></td>
+                </tr>
+
+                <tr ng-hide="HnSregularservies">
+                  <td>Regular Services</td>
+                  <td></td>
+                  <td>
+                  	<select class="input form-control" ng-model="selectedservices" ng-change="OnChangeofRegularServices(selectedservices)" ng-options="RS.service_name for RS in RegularServices">
+                    </select></td>
+                </tr>
+
+                <tr ng-hide="HnShealingpackages">
+                  <td>Healing Packages</td>
+                  <td></td>
+                  <td>
+				          	<select class="input form-control" ng-model="selectedpackages" ng-change="OnChangeofHealingPackages(selectedpackages)" ng-options="HS.package_name for HS in HealingPackages">
+                    </select></td>
+                </tr>
+
+                <tr>
+                  <td>Add-ons</td>
+                  <td></td>
+                  <td><select class="input form-control" ng-model="selected_addons" ng-change="OnChangeofAddOns(selected_addons)" ng-options="AO.add_ons_name for AO in add_ons">
+                    </select></td>
+                </tr>
+
+                <tr>
+                  <td>Name of Attendant</td>
+                  <td></td>
+                  <td>
+                    <select class="input form-control" ng-model="selected_attendant" ng-change="OnChangeofAttendant(selected_attendant)" ng-options="Att.attendant_name for Att in attendants"></select>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td><input class="input form-control" type="submit" name="" value="Confirm"><input class="input form-control" type="submit" name="" value="Cancel"></td>
+                </tr>
+                
+              </tbody>
+            </table>
+          </div>
+
+	</div>
+
+</div>

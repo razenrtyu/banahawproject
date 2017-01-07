@@ -1,0 +1,125 @@
+<head>
+  <link href="css/content/transaction.css" rel="stylesheet">
+</head>
+
+<h3>Add-Member</h3>
+
+<div class="div-content">
+  <div class="form2">
+    <div class="table-responsive">
+      <table class="table table-striped">
+
+        <tbody>
+
+          <tr>
+            <td>Type</td>
+            <td></td>
+            <td>
+              <select class="input form-control" ng-model="membertype" ng-change="OnChangeofMembertype(membertype)">
+                <option>Personalized</option>
+                <option>Family</option>
+            </select>
+            </td>
+          </tr>
+
+          <tr ng-hide="personalized">
+            <td>Branch</td>
+            <td></td>
+            <td><select class="input form-control"></select></td>
+          </tr>
+
+          <tr ng-hide="personalized">
+            <td>Name</td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name="" placeholder="Name" >
+            </td>
+          </tr>
+
+          <tr ng-hide="personalized">
+            <td>Address</td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name="" placeholder="Address">
+            </td>
+          </tr>
+
+          <tr ng-hide="personalized">
+            <td>Contact Number</td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name="" placeholder="Mobile Number / Landline Number">
+            </td>
+          </tr>
+
+          <tr ng-hide="personalized">
+            <td>Email address</td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name="" placeholder="E-Mail">
+            </td>
+          </tr>
+
+          <tr ng-hide="personalized">
+            <td>Birthdate</td>
+            <td></td>
+            <td>
+              <input type="datetime" date-time ng-model="start">
+            </td>
+          </tr>
+
+          <tr ng-hide="member">
+            <td>Sub-Member</td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name=""  size="60">
+            </td>
+          </tr>
+
+          <tr ng-hide="member">
+            <td></td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name=""  size="60">
+            </td>
+          </tr>
+
+          <tr ng-hide="member">
+            <td></td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name=""  size="60">
+            </td>
+          </tr>
+
+          <tr ng-hide="member">
+            <td></td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name=""  size="60">
+            </td>
+          </tr>
+
+          <tr ng-hide="member">
+            <td></td>
+            <td></td>
+            <td>
+              <input class="input form-control" class="fillup" type="text" name=""  size="60">
+            </td>
+          </tr>
+
+          <tr ng-hide="genbuttons">
+            <td></td>
+            <td></td>
+            <td>
+              <input class="input form-control" type="submit" name="" value="Confirm">
+            </td>
+          </tr>
+
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
