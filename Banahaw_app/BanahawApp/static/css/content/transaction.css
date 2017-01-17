@@ -4,6 +4,7 @@ h3{
 #validation{
 	float: left;
 	width: 30%;
+
 }
 .input-top{
 	width: 80% !important;
@@ -19,4 +20,32 @@ input{
 .alert-top{
 	width: 80%;
 	height: 10%;
+}
+#divmain3{
+	width: 80%;
+	margin: auto;
+	border-style: ridge;
+}
+#divmain1{
+	width: 70%;
+	margin-right: auto;
+	margin-left: 30%;
+	margin-bottom: : auto;
+	margin-top: auto;
+	border-style: ridge;	
+}
+#divheader{
+	width: 80%;
+	position: relative;
+	margin: auto;
+	background-color: red;
+	margin-bottom: : -5px;
+}
+#divsamp{
+	width: 30%;
+	height: 150px;
+
+}
+.li-table{
+	cursor: pointer; cursor: hand;
 }

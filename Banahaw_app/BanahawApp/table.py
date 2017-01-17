@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, func, Date
 from decimal import Decimal
 import datetime
 import uuid
@@ -19,7 +19,7 @@ class GenericBase(object):
                 continue
 
             if type(tabledic[k]) in [datetime.datetime,datetime.date]:
-                tabledic[k] = tabledic[k].isoformat() + 'Z'
+                tabledic[k] = tabledic[k].strftime('%m/%d/%Y %H:%M')
             elif type(tabledic[k]) is Decimal:
                 tabledic[k] = float(tabledic[k])
             elif type(tabledic[k]) is uuid.UUID:
@@ -46,6 +46,7 @@ class T_Regular_Services(GenericBase,Base):
     off_peak_price = Column(Integer)
     peak_price = Column(Integer)
     non_member_price = Column(Integer)
+    duration = Column(Integer)
 
 
 class T_Healing_Packages(GenericBase,Base):
@@ -55,6 +56,7 @@ class T_Healing_Packages(GenericBase,Base):
     package_name = Column(Integer)
     member_price = Column(Integer)
     non_member_price = Column(Integer)
+    duration = Column(Integer)
 
 
 class T_Add_Ons(GenericBase,Base):
@@ -64,6 +66,7 @@ class T_Add_Ons(GenericBase,Base):
     add_ons_name = Column(Integer)
     member_price = Column(Integer)
     non_member_price = Column(Integer)
+    duration = Column(Integer)
 
 
 class T_Branch(GenericBase,Base):
@@ -103,3 +106,27 @@ class T_Member01(GenericBase,Base):
     name = Column(String(50))
     relationship = Column(String(50))
     datecreated = Column(DateTime)
+
+
+class T_Transaction(GenericBase,Base):
+    __tablename__ = 'transactions'
+
+    transactionid = Column(Integer, primary_key=True)
+    transaction_type = Column(String(20))
+    client_name = Column(String(50))
+    client_type = Column(String(50))
+    branch = Column(String(50))
+    service_type = Column(String(50))
+    service = Column(String(50))
+    add_ons = Column(String(50))
+    products = Column(String(50))
+    attendant_name = Column(String(50))
+    attendantid = Column(Integer)
+    estimated_time = Column(Integer)
+    time_spent = Column(Integer)
+    total_amount = Column(Integer)
+    payment_type = Column(String(50))
+    active = Column(Boolean)
+    datestart = Column(DateTime, default=func.now())
+    dateend = Column(DateTime)
+    datecreated = Column(Date, default=datetime.datetime.now().date())
