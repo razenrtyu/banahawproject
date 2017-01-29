@@ -29,6 +29,7 @@ CREATE TABLE `regular_services` (
   `peak_price` int(11) DEFAULT NULL,
   `non_member_price` int(11) DEFAULT NULL,
   `datecreated` datetime DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
   PRIMARY KEY (`regular_services_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -39,7 +40,7 @@ CREATE TABLE `regular_services` (
 
 LOCK TABLES `regular_services` WRITE;
 /*!40000 ALTER TABLE `regular_services` DISABLE KEYS */;
-INSERT INTO `regular_services` VALUES (1,'Relaxing Swedish Massage',150,200,250,'2016-12-30 19:27:53'),(2,'5-in-1 Signature Massage',250,300,400,'2016-12-30 19:31:20'),(3,'Hot Stone Massage',450,500,700,'2016-12-30 19:31:20'),(4,'Shiatsu Massage',450,500,700,'2016-12-30 19:31:20');
+INSERT INTO `regular_services` VALUES (1,'Relaxing Swedish Massage',150,200,250,'2016-12-30 19:27:53',60),(2,'5-in-1 Signature Massage',250,300,400,'2016-12-30 19:31:20',60),(3,'Hot Stone Massage',450,500,700,'2016-12-30 19:31:20',90),(4,'Shiatsu Massage',450,500,700,'2016-12-30 19:31:20',60);
 /*!40000 ALTER TABLE `regular_services` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-08 23:20:15
+-- Dump completed on 2017-02-04  2:05:49

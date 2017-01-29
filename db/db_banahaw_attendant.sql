@@ -26,8 +26,9 @@ CREATE TABLE `attendant` (
   `attendantid` int(11) NOT NULL AUTO_INCREMENT,
   `attendant_name` varchar(255) DEFAULT NULL,
   `datecreated` datetime DEFAULT NULL,
+  `allowance` int(11) DEFAULT NULL,
   PRIMARY KEY (`attendantid`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,7 +37,7 @@ CREATE TABLE `attendant` (
 
 LOCK TABLES `attendant` WRITE;
 /*!40000 ALTER TABLE `attendant` DISABLE KEYS */;
-INSERT INTO `attendant` VALUES (1,'Sample_attendant_1','2017-01-07 22:51:35'),(2,'Sample_attendant_2','2017-01-07 22:51:35'),(3,'Sample_attendant_3','2017-01-07 22:51:35'),(4,'Sample_attendant_4','2017-01-07 22:51:35'),(5,'Sample_attendant_5','2017-01-07 22:51:35');
+INSERT INTO `attendant` VALUES (1,'Sample_attendant_1','2017-01-07 22:51:35',100),(2,'Sample_attendant_2','2017-01-07 22:51:35',150),(3,'Sample_attendant_3','2017-01-07 22:51:35',200),(4,'Sample_attendant_4','2017-01-07 22:51:35',250),(5,'Sample_attendant_5','2017-01-07 22:51:35',250),(10,'sample lng','2017-02-02 23:39:43',200);
 /*!40000 ALTER TABLE `attendant` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-08 23:20:15
+-- Dump completed on 2017-02-04  2:05:49

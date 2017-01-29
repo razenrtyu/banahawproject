@@ -128,10 +128,12 @@ ul.alert-dropdown {
         border: none;
         border-radius: 0;
         overflow-y: auto;
-        background-color: #669966;
+        background-color: #f8f8f8;
         bottom: 0;
         overflow-x: hidden;
         padding-bottom: 40px;
+        border-right:1px lightgray solid; 
+        box-shadow: 3px 0px 5px lightgray;
     }
 
     .side-nav>li>a {
@@ -141,7 +143,8 @@ ul.alert-dropdown {
     .side-nav li a:hover,
     .side-nav li a:focus {
         outline: none;
-        background-color: #DFF0D8 !important;
+        background-color: #2E8B57 !important;
+        color: white !important;
     }
 }
 

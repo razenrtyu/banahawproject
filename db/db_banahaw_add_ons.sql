@@ -28,6 +28,7 @@ CREATE TABLE `add_ons` (
   `member_price` int(11) DEFAULT NULL,
   `non_member_price` int(11) DEFAULT NULL,
   `datecreated` datetime DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
   PRIMARY KEY (`add_ons_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -38,7 +39,7 @@ CREATE TABLE `add_ons` (
 
 LOCK TABLES `add_ons` WRITE;
 /*!40000 ALTER TABLE `add_ons` DISABLE KEYS */;
-INSERT INTO `add_ons` VALUES (1,'Netibo Healing',100,200,'2016-12-30 19:38:55'),(2,'Ventusa Therapy',100,200,'2016-12-30 19:38:55'),(3,'Cranio Sacral',150,300,'2016-12-30 19:38:55'),(4,'Turtlewalk Massage',150,300,'2016-12-30 19:38:55'),(5,'Steam Bath',150,300,'2016-12-30 19:38:55'),(6,'Ear Candling',150,300,'2016-12-30 19:38:55'),(7,'Ear Massage',150,300,'2016-12-30 19:38:55'),(8,'Back Massage',150,300,'2016-12-30 19:38:55'),(9,'Head Massage',150,300,'2016-12-30 19:38:55'),(10,'Foot Scrub',150,300,'2016-12-30 19:38:55'),(11,'Foot Reflex',150,300,'2016-12-30 19:38:55'),(12,'Hand Scrub',150,300,'2016-12-30 19:38:55'),(13,'Hand Reflex',150,300,'2016-12-30 19:38:55'),(14,'Hot Stone Foot Reflex',150,300,'2016-12-30 19:38:55'),(15,'Lower Extremities Massage',150,300,'2016-12-30 19:38:55'),(16,'Hair Spa',150,300,'2016-12-30 19:38:55'),(17,'Body Scrub',300,600,'2016-12-30 19:38:55');
+INSERT INTO `add_ons` VALUES (1,'Netibo Healing',100,200,'2016-12-30 19:38:55',30),(2,'Ventusa Therapy',100,200,'2016-12-30 19:38:55',30),(3,'Cranio Sacral',150,300,'2016-12-30 19:38:55',30),(4,'Turtlewalk Massage',150,300,'2016-12-30 19:38:55',30),(5,'Steam Bath',150,300,'2016-12-30 19:38:55',30),(6,'Ear Candling',150,300,'2016-12-30 19:38:55',30),(7,'Ear Massage',150,300,'2016-12-30 19:38:55',30),(8,'Back Massage',150,300,'2016-12-30 19:38:55',30),(9,'Head Massage',150,300,'2016-12-30 19:38:55',30),(10,'Foot Scrub',150,300,'2016-12-30 19:38:55',30),(11,'Foot Reflex',150,300,'2016-12-30 19:38:55',30),(12,'Hand Scrub',150,300,'2016-12-30 19:38:55',30),(13,'Hand Reflex',150,300,'2016-12-30 19:38:55',30),(14,'Hot Stone Foot Reflex',150,300,'2016-12-30 19:38:55',30),(15,'Lower Extremities Massage',150,300,'2016-12-30 19:38:55',30),(16,'Hair Spa',150,300,'2016-12-30 19:38:55',30),(17,'Body Scrub',300,600,'2016-12-30 19:38:55',30);
 /*!40000 ALTER TABLE `add_ons` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-08 23:20:15
+-- Dump completed on 2017-02-04  2:05:49

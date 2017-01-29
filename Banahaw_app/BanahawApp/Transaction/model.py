@@ -10,7 +10,7 @@ class Transactions_data(Mini_func):
 		self.__args = kwargs
 		self._retval = list()
 		self.__search_filter = list()
-		self.__search_param = ['active','transaction_type','transactionid']
+		self.__search_param = ['active','transaction_type','transactionid','attendantid']
 		self.__range_param = ['from','to']
 		self.__data = None
 
@@ -78,8 +78,7 @@ class Transactions_data(Mini_func):
 			for key in update_list:
 				if key in update_kwargs and update_kwargs[key] not in ('',None):
 					if key == 'dateend':
-						update_kwargs[key] = update_kwargs[key].replace("T"," ")
-						update_kwargs[key] = update_kwargs[key].replace("Z","")
+						update_kwargs[key] = datetime.datetime.strptime(update_kwargs[key], '%m/%d/%Y, %I:%M:%S %p')
 					try:
 						setattr(obj,key,update_kwargs[key])
 					except TypeError:

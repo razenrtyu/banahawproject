@@ -6,21 +6,21 @@ class Transactions(Resource):
 		self.__reqparser = reqparse.RequestParser()
 		self.__args = dict()
 
-	def get(self):
+	def get(self,querytype=None):
 		retval = dict()
 		status = 200
 
 		args_list = [('active',bool,'args',None,False),
-					 ('transaction_type',str,'json',None,False),
-					 ('from',str,'json',None,False),
-					 ('to',str,'json',None,False)]
+					 ('transaction_type',str,'args',None,False),
+					 ('from',str,'args',None,False),
+					 ('to',str,'args',None,False),
+					 ('attendantid',int,'args',None,False)]
 
 		for args in args_list:
 			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])
 
 		self.__args = self.__reqparser.parse_args()
 
-		querytype = None
 
 		transaction = Transactions_data(querytype,**self.__args)
 		result = transaction.get_data()
@@ -82,7 +82,6 @@ class Transactions(Resource):
 		querytype = None
 
 		transaction = Transactions_data(querytype)
-
 		result = transaction.edit_transaction(**update_args)
 
 		if result:

@@ -17,6 +17,7 @@
     <!-- <link href="css/banahaw.css" rel="stylesheet"> -->
     <link href="css/angular-datepicker.min.css" rel="stylesheet" type="text/css">
     <link href="css/select.min.css" rel="stylesheet" type="text/css">
+    <!-- <link href="css/angular-material.min.css" rel="stylesheet" type="text/css"> -->
 
 </head>
 
@@ -42,14 +43,16 @@
             </ul>
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
+                
                 <ul class="nav navbar-nav side-nav">
-                    <li>
-                        <a href="/admin"><i class="fa fa-fw fa-dashboard"></i> Dashboard (admin)</a>
+                    </br>
+l                    <li>
+                        <a href="#/"><i class="fa fa-home" aria-hidden="true"></i>&nbsp&nbsp Dashboard</a>
                     </li>
                     
                     <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#demo">
-                        <i class="fa fa-credit-card" aria-hidden="true"></i>
+                        <i class="fa fa-credit-card" aria-hidden="true"></i>&nbsp&nbsp
                         Transactions </a>
                         <ul id="demo" class="collapse">
                             <li>
@@ -68,7 +71,7 @@
                     
                     <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#demo1">
-                        <i class="fa fa-id-card" aria-hidden="true"></i>
+                        <i class="fa fa-id-card" aria-hidden="true"></i>&nbsp&nbsp
                         Membership </a>
                         <ul id="demo1" class="collapse">
 
@@ -76,32 +79,41 @@
                                 <a href="#/member/addmember">Add Member</a>
                             </li>
                             <li>
-                                <a href="#/member/deletemember">Delete Member</a>
+                                <a href="#/member/upgrademember">Upgrade Membership</a>
+                            </li>
+                            <li>
+                                <a href="#/member/viewmembers">View Members</a>
                             </li>
                         </ul>
                     </li>
                     
                     <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#demo2">
-                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                        <i class="fa fa-calendar" aria-hidden="true"></i>&nbsp&nbsp
                         Reservations </a>
                         <ul id="demo2" class="collapse">
                             <li>
-                                <a href="#">Add Reservations</a>
+                                <a href="#/reservations/add-reservation/members">Members Reservation</a>
                             </li>
                             <li>
-                                <a href="#">View Reservations</a>
+                                <a href="#/reservations/add-reservation/non-members">Non-Members Reservation</a>
+                            </li>
+                            <li>
+                                <a href="#/reservations/view-reservation">View Reservations</a>
                             </li>
                         </ul>
                     </li>
 
                     <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#demo3">
-                        <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                        Daily Reports </a>
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp&nbsp
+                        Reports </a>
                         <ul id="demo3" class="collapse">
                             <li>
-                                <a href="">View Daily Reports</a>
+                                <a href="">Transaction Reports</a>
+                            </li>
+                            <li>
+                                <a href="">Membership Reports</a>
                             </li>
                             
                         </ul>
@@ -109,9 +121,26 @@
 
                     <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#demo4">
-                        <i class="fa fa-user-circle" aria-hidden="true">
-                        </i> Users </a> 
+                        <i class="fa fa-users" aria-hidden="true"></i>
+                        </i>&nbsp&nbsp Attendants </a> 
                         <ul id="demo4" class="collapse">
+                            <li>
+                                <a href="#/attendants/new_attendant">New Attendant</a>
+                            </li>
+                            <li>
+                                <a href="#/attendants/del_attendant">View Attendant</a>
+                            </li>
+                            <li>
+                                <a href="#/attendants/view_attendant">View Attendant Report</a>
+                            </li>
+                        </ul>
+                    </li>
+
+<!--                     <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#demo5">
+                        <i class="fa fa-user-circle" aria-hidden="true">
+                        </i>&nbsp&nbsp Users </a> 
+                        <ul id="demo5" class="collapse">
                             <li>
                                 <a href="">Add Users</a>
                             </li>
@@ -119,7 +148,7 @@
                                 <a href="">Delete Users</a>
                             </li>
                         </ul>
-                    </li>
+                    </li> -->
 
                 </ul>
             </div>
@@ -140,7 +169,6 @@
     <script src="js/MyAngular/AdminAngular.js"></script>
     <script src="js/angular-datepicker.min.js"></script>
     <script src="js/ui-bootstrap-tpls-2.4.0.min.js"></script>
-<!--     <script src="js/select.min.js"></script> -->
     <script src="js/select-tpls.min.js"></script>
     
 

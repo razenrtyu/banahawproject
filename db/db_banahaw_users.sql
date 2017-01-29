@@ -28,7 +28,7 @@ CREATE TABLE `users` (
   `password` varchar(255) DEFAULT NULL,
   `role` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +37,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (6,'razen3hash','$2b$12$rIfqY72.n2zci4SeSObAcOYJgE/beHMdEmZ/atxQBz2Ve8M9lvF3.','user'),(7,'admin','$2b$12$IdYJs8in3m2t8NGF1Ogax.ya/7lP3VcxM5bDqjCKDA1YN4LoSAHZq','administrator');
+INSERT INTO `users` VALUES (6,'razen3hash','$2b$12$rIfqY72.n2zci4SeSObAcOYJgE/beHMdEmZ/atxQBz2Ve8M9lvF3.','user'),(8,'admin','$2b$12$OtPc09Y2brh4SKFYIbnAnu9rIvS9AMBw7E1s7oXSE1eDQuM1Ei6Ya','administrator');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-08 23:20:14
+-- Dump completed on 2017-02-04  2:05:49
