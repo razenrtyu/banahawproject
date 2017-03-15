@@ -58,6 +58,10 @@ MyApp2.config(['$routeProvider',function($routeProvider){
 	.when('/attendants/view_attendant',{
 		templateUrl : "partials/viewattendant.html",
 		controller : "ViewAttendantController"
+	})
+	.when('/reports/transaction_report',{
+		templateUrl : "partials/report.html",
+		controller : "ReportController"
 	});
 
 }]);
@@ -1391,6 +1395,13 @@ MyApp2.controller('ViewController',['$scope','Requests','$route',function($scope
 
 MyApp2.controller('NewAttendantController',['$scope','Requests','$route',function($scope,Requests,$route){
 
+	$scope.allowancelist =[
+		100,
+		150,
+		200,
+		250
+	]
+
 	$scope.confirm = function(){
 		var json_data = {'attendant_name': $scope.attname,
 						 'allowance': $scope.attallowance}
@@ -1497,6 +1508,31 @@ MyApp2.controller('ViewAttendantController',['$scope','Requests',function($scope
 			};
 		});
 	}
+
+}]);
+
+MyApp2.controller('ReportController',['$scope','Requests',function($scope,Requests){
+
+	$scope.samplereport = {
+		'03/11/2016':[
+			{'name':'rc','allowance':250,'commision_on_service':200,'incentive':200,'total':650},
+			{'name':'ep','allowance':450,'commision_on_service':400,'incentive':400,'total':1250},
+			{'name':'dudi','allowance':500,'commision_on_service':500,'incentive':500,'total':1500}
+		],
+		'03/12/2016':[
+			{'name':'rc','allowance':250,'commision_on_service':200,'incentive':200,'total':650},
+			{'name':'ep','allowance':450,'commision_on_service':400,'incentive':400,'total':1250},
+			{'name':'dudi','allowance':500,'commision_on_service':500,'incentive':500,'total':1500}
+		]
+	}
+
+	$scope.onclick = function(data){
+		if(data.show == true){
+			data.show = false
+		}else{
+			data.show = true
+		};
+	};
 
 }]);
 

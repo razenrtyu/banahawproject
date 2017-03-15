@@ -10,6 +10,6 @@ try:
 	DB_SCHEMA = os.environ['schema']
 except:
 	DB_USER = 'root'
-	DB_PASSWORD = 'p@ssw0rd'
-	DB_SERVER = '127.0.0.1:3306'
+	DB_PASSWORD = 'root'
+	DB_SERVER = '127.0.0.1:8000'
 	DB_SCHEMA = 'db_banahaw'

@@ -1,5 +1,6 @@
 <head>
 	<link href="css/content/transaction.css" rel="stylesheet">
+  <link href="css/content/font.css" rel="stylesheet">
 
 </head>
 
@@ -28,14 +29,47 @@
                 <tr>
                   <td>Name</td>
                   <td></td>
-                  <td><input class="input form-control" type="text" name="" ng-model="attname">
+                  <td><input class="input form-control" type="text" name="" ng-model="attname" placeholder="Attendant's Name">
                   </td>
                 </tr>
 
                   <tr>
                     <td>Allowance</td>
                     <td></td>
-                      <td><input class="input form-control" type="text" name="" ng-model="attallowance">
+                      <td><select class="input form-control" ng-model="attallowance" ng-options="X for X in allowancelist" ng-change="sample(attallowance)">
+                        <option value="" disabled>Choose Allowance..</option>
+                      </select>
+                      </td>
+                  </tr>
+
+                  <tr>
+                  <td>Date Hired</td>
+                    <td></td>
+                      <td>
+                        <datepicker datepicker-class="class1" date-format="dd-MMMM-yyyy" >
+                      <input class="input form-control" class="fillup" type="text" name="" placeholder="Choose Date" ng-model="attdatehired">
+                      </datepicker>
+                      </td>
+                  </tr>
+
+                  <tr>
+                  <td>Mobile Number</td>
+                    <td></td>
+                      <td><input class="input form-control" type="text" name="" ng-model="attmobilenum" placeholder="">
+                      </td>
+                  </tr>
+
+                  <tr>
+                  <td>Position</td>
+                    <td></td>
+                      <td><input class="input form-control" type="text" name="" ng-model="attposition">
+                      </td>
+                  </tr>
+                  
+                  <tr>
+                  <td>Address</td>
+                    <td></td>
+                      <td><input class="input form-control" type="text" name="" ng-model="attaddress">
                       </td>
                   </tr>
                 

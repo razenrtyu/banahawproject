@@ -1,5 +1,6 @@
 <head>
   <link href="css/content/transaction.css" rel="stylesheet">
+  <link href="css/content/font.css" rel="stylesheet">
 
 </head>
 
@@ -9,7 +10,7 @@
 <br>
 
 <div id="divmain3" class="table-responsive">
-<table class="table table-hover" style="font-size:11px;">
+<table class="table table-hover" style="font-size: 13px;">
   <thead>
       <div style="background-color: #2E8B57;width: 100%; height: 50px;">
          
@@ -41,19 +42,19 @@
       <td ng-bind="data.started" class="li-table"></td>
       <td><button ng-click="cancelTransaction(data)" type="button" class="btn btn-danger btn-xs">Cancel</button></td>
     </tr>
-    <tr ng-show=data.show>
+    <tr ng-show=data.show style="font-size: 13px;">
       <td colspan="8">
-        <div id="divsamp" class="table-responsive" style="float:left;">
+        <div class="tr-height table-responsive" style="float:left;">
           <p><b>Transaction Type:</b>{{data.transaction_type}}</p>
           <p><b>Name:</b>  {{data.client_name}}</p>
           <p><b>Membership Type:</b>  {{data.client_type}}</p>
           <p><b>Service Availed:</b>  {{data.service_type}}</p>
           <p><b>Service Type:</b>  {{data.service}}</p>
         </div>
-        <div id="divsamp" class="table-responsive" style="display:inline-block;">
+        <div class="tr-height table-responsive" style="display:inline-block;">
           <p><b>Add-ons:</b>{{data.add_ons}}</p>
         </div>
-        <div id="divsamp" class="table-responsive" style="float:right;">
+        <div class="tr-height table-responsive" style="float:right;">
           <p><b>Attendant:</b>{{data.attendant_name}}</p>
           <p><b>Estimated Time:</b>{{mintohour(data.estimated_time)}}</p>
           <p><b>Total amount:</b>₱{{data.total_amount}}</p>

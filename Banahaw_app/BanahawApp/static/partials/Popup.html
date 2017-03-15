@@ -2,11 +2,15 @@
 	<h3 class="modal-title">Transaction Complete</h3>
 </div>
 <div class="modal-body">
-	<ul>
-		<li><span><b>Transaction Type:</b> {{TransactionType}}</span></li>
-		<li><span><b>Name:</b> {{name}}</span></li>
+	<table>
+	<tr>
+		<td colspan="2"><b>Transaction Type:</b></td> <td>{{TransactionType}}</td>
+	</tr>	
+	<tr>
+		<td><b>Name:</b></td> <td></td> <td>{{name}}</td>
+	</tr>
 		<li><span><b>Membership Type: {{Membertype}}</b></span></li>
-		<li><span><b>Branch:</b> {{branch}}</span></li>
+		<li><span><b>Branch:</b> &nbsp&nbsp&nbsp&nbsp{{branch}}</span></li>
 		<li><span><b>Service Type:</b> {{ServiceType}}</span>
 			<ul>
 				<li><span><b>Service:</b> {{Service}}</span>
@@ -18,7 +22,7 @@
 		<li></li>
 		<li><span><b>Amount:</b> {{Amount}}</span></li>
 		<li><span><b>Payment Type:</b> {{PaymentType}}</span></li>
-	</ul>
+	</table>
 </div>
 <div class="modal-footer">
 	<button class="btn btn-warning" type="button"

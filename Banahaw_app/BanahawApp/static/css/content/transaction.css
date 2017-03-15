@@ -76,3 +76,8 @@ input{
 #viewmemberdiv{
 	width: 80%;
 }
+.report-length{
+	width: 100%;
+	margin: auto;
+	background-color: #D3D3D3;
+}
