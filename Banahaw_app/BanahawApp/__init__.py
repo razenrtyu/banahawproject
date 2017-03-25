@@ -96,6 +96,9 @@ import BanahawApp.Attendants
 import BanahawApp.Member00
 import BanahawApp.Member01
 import BanahawApp.Transaction
+import BanahawApp.Reservations
+import BanahawApp.Attendant01
+import BanahawApp.Report
 
 BanahawApp.Login.add_route(api)
 BanahawApp.RegularServices.add_route(api)
@@ -106,3 +109,6 @@ BanahawApp.Attendants.add_route(api)
 BanahawApp.Member00.add_route(api)
 BanahawApp.Member01.add_route(api)
 BanahawApp.Transaction.add_route(api)
+BanahawApp.Reservations.add_route(api)
+BanahawApp.Attendant01.add_route(api)
+BanahawApp.Report.add_route(api)

@@ -12,6 +12,7 @@ class RegularServices(Resource):
 		status = 200
 
 		services = Regular_Services_data()
+		services.get_regular_services_data()
 		result = services.get_data()
 		retval = result
 
@@ -21,7 +22,25 @@ class RegularServices(Resource):
 		pass
 
 	def put(self):
-		pass
+		status = 200
+
+		update_args = dict()
+		args_update_list = [
+			('regular_services_id', int, 'json', None, True),
+			('off_peak_price', int, 'json', None, False),
+			('peak_price', int, 'json', None, False),
+			('non_member_price', int, 'json', None, False),
+			('duration', int, 'json', None, False)
+		]
+
+		for args in args_update_list:
+			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])
+
+		update_args = self.__reqparser.parse_args()
+		services = Regular_Services_data()
+		services.edit_regular_services_data(**update_args)
+
+		return status
 
 	def delete(self):
 		pass

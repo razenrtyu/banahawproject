@@ -26,6 +26,12 @@ input{
 	margin: auto;
 	border-style: ridge;
 }
+#divmain2{
+	width: 80%;
+	margin: auto;
+	background-color: #D3D3D3;
+
+}
 #divmain1{
 	width: 70%;
 	margin-right: auto;
@@ -43,9 +49,33 @@ input{
 }
 #divsamp{
 	width: 30%;
-	height: 150px;
+	height: 200px;
 
 }
 .li-table{
 	cursor: pointer; cursor: hand;
+}
+.lihover{
+	cursor: pointer; cursor: hand;
+}
+.class1{
+	width: 30px;
+}
+.btn-style:hover{
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+/*.checkboxbut{
+	position: absolute;
+}*/
+.viewtxtbox{
+	width: 100% !important;
+}
+.class2{
+	width: 100% !important;
+}
+#viewmemberdiv{
+	width: 80%;
+}
+.red{
+	background-color: #ff9999;
 }

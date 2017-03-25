@@ -81,7 +81,21 @@ class T_Attendants(GenericBase,Base):
 
     attendantid = Column(Integer,primary_key=True)
     attendant_name = Column(String(50))
+    allowance = Column(Integer)
+    hiredate = Column(String(50))
+    mobilenumber = Column(String(20))
+    position = Column(String(50))
+    address = Column(String(100))
+    datecreated = Column(Date, default=datetime.datetime.now())
 
+class T_Attendants01(GenericBase,Base):
+    __tablename__ = 'attendant01'
+
+    attendant01id = Column(Integer,primary_key=True)
+    attendantid = Column(Integer)
+    timein = Column(String(10))
+    timeout = Column(String(10))
+    trandate = Column(Date)
 
 class T_Member00(GenericBase,Base):
     __tablename__ = 'member00'
@@ -92,10 +106,15 @@ class T_Member00(GenericBase,Base):
     mobile_number = Column(String(50))
     landline_number = Column(String(50))
     email_address = Column(String(50))
-    birthdate = Column(DateTime)
+    birthdate = Column(String(50))
     membertype = Column(String(50))
     feedback = Column(String(100))
-    datecreated = Column(DateTime)
+    membershipcost = Column(Integer)
+    datecreated = Column(Date, default=datetime.datetime.now().date())
+    attendant_name = Column(String(50))
+    attendantid = Column(Integer)
+    upgraded = Column(Date)
+    upgraded_by = Column(Integer)
 
 
 class T_Member01(GenericBase,Base):
@@ -105,7 +124,7 @@ class T_Member01(GenericBase,Base):
     member00id = Column(Integer, ForeignKey(T_Member00.member00id))
     name = Column(String(50))
     relationship = Column(String(50))
-    datecreated = Column(DateTime)
+    datecreated = Column(DateTime, default = func.now())
 
 
 class T_Transaction(GenericBase,Base):
@@ -126,7 +145,37 @@ class T_Transaction(GenericBase,Base):
     time_spent = Column(Integer)
     total_amount = Column(Integer)
     payment_type = Column(String(50))
+    service_price = Column(Integer)
+    add_ons_price = Column(String(255))
     active = Column(Boolean)
     datestart = Column(DateTime, default=func.now())
     dateend = Column(DateTime)
     datecreated = Column(Date, default=datetime.datetime.now().date())
+
+
+class T_Reservation(GenericBase,Base):
+    __tablename__ = 'reservations'
+
+    reservationid = Column(Integer, primary_key=True)
+    transaction_type = Column(String(20))
+    client_name = Column(String(50))
+    client_type = Column(String(50))
+    branch = Column(String(50))
+    service_type = Column(String(50))
+    service = Column(String(50))
+    add_ons = Column(String(50))
+    products = Column(String(50))
+    attendant_name = Column(String(50))
+    attendantid = Column(Integer)
+    estimated_time = Column(Integer)
+    time_spent = Column(Integer)
+    total_amount = Column(Integer)
+    service_price = Column(Integer)
+    add_ons_price = Column(String(255))
+    payment_type = Column(String(50))
+    active = Column(Boolean)
+    datestart = Column(DateTime)
+    dateend = Column(DateTime)
+    datecreated = Column(Date, default=datetime.datetime.now().date())
+    res_date = Column(Date)
+    res_time = Column(String(50))

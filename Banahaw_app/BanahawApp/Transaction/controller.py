@@ -6,21 +6,21 @@ class Transactions(Resource):
 		self.__reqparser = reqparse.RequestParser()
 		self.__args = dict()
 
-	def get(self):
+	def get(self,querytype=None):
 		retval = dict()
 		status = 200
 
 		args_list = [('active',bool,'args',None,False),
-					 ('transaction_type',str,'json',None,False),
-					 ('from',str,'json',None,False),
-					 ('to',str,'json',None,False)]
+					 ('transaction_type',str,'args',None,False),
+					 ('from',str,'args',None,False),
+					 ('to',str,'args',None,False),
+					 ('attendantid',int,'args',None,False)]
 
 		for args in args_list:
 			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])
 
 		self.__args = self.__reqparser.parse_args()
 
-		querytype = None
 
 		transaction = Transactions_data(querytype,**self.__args)
 		result = transaction.get_data()
@@ -47,7 +47,9 @@ class Transactions(Resource):
 					 ('payment_type',str,'json',None,False),
 					 ('active',bool,'json',True,False),
 					 ('datestart',str,'json',None,False),
-					 ('dateend',str,'json',None,False)]
+					 ('dateend',str,'json',None,False),
+					 ('service_price',int,'json',None,False),
+					 ('add_ons_price',str,'json',None,False)]
 
 		for args in args_list:
 			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])
@@ -68,11 +70,20 @@ class Transactions(Resource):
 
 		update_args = dict()
 
-		args_update_list = [('payment_type', str, 'json', 'None', True),
-							('dateend', str, 'json', 'None', True),
-							('time_spent', int, 'json', 'None', True),
-							('active', bool, 'json', 'None', True),
-							('transactionid', int, 'args', 'None', True)]
+		args_update_list = [('payment_type', str, 'json', None, False),
+							('dateend', str, 'json', None, False),
+							('time_spent', int, 'json', None, False),
+							('active', bool, 'json', None, False),
+							('service_type', str, 'json', None, False),
+							('service', str, 'json', None, False),
+							('add_ons', str, 'json', None, False),
+							('attendant_name', str, 'json', None, False),
+							('attendantid', str, 'json', None, False),
+							('estimated_time', str, 'json', None, False),
+							('total_amount', str, 'json', None, False),
+							('service_price', int, 'json', None, False),
+							('add_ons_price', str, 'json', None, False),
+							('transactionid', int, 'args', None, True)]
 
 		for args in args_update_list:
 			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])
@@ -82,7 +93,6 @@ class Transactions(Resource):
 		querytype = None
 
 		transaction = Transactions_data(querytype)
-
 		result = transaction.edit_transaction(**update_args)
 
 		if result:
@@ -95,7 +105,7 @@ class Transactions(Resource):
 	def delete(self):
 		status = 204
 
-		args_list = [('transactionid', int, 'args', 'None', True)]
+		args_list = [('transactionid', int, 'args', None, True)]
 
 		for args in args_list:
 			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])

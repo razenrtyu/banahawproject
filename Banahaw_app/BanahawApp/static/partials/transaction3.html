@@ -28,9 +28,10 @@
     </tr>
   </thead>
   <tbody ng-repeat="data in onGoing">
-    <tr ng-click="onclick(data)">
+    <tr ng-click="onclick(data)" ng-class="{red: data.timedone}">
       <th scope="row">
-        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        <i class="fa fa-chevron-right" aria-hidden="true" ng-if=!data.show></i>
+        <i class="fa fa-chevron-down" aria-hidden="true" ng-if=data.show></i>
         </th>
       <td ng-bind="data.transaction_type" class="li-table"></td>
       <td ng-bind="data.client_name" class="li-table"></td>
@@ -38,7 +39,7 @@
       <td ng-bind="data.attendant_name" class="li-table"></td>
       <td ng-bind="mintohour(data.estimated_time)" class="li-table"></td>
       <td ng-bind="data.started" class="li-table"></td>
-      <td><button ng-click="cancelTransaction(data)"><i class="fa fa-times" aria-hidden="true"></i></button></td>
+      <td><button ng-click="cancelTransaction(data,$index)" type="button" class="btn btn-danger btn-xs">Cancel</button></td>
     </tr>
     <tr ng-show=data.show>
       <td colspan="8">
@@ -48,6 +49,8 @@
           <p><b>Membership Type:</b>  {{data.client_type}}</p>
           <p><b>Service Availed:</b>  {{data.service_type}}</p>
           <p><b>Service Type:</b>  {{data.service}}</p>
+          <br><br><br>
+          <button ng-click="editTransaction(data)" type="button" class="btn btn-warning btn-sm">Edit Transaction</button>
         </div>
         <div id="divsamp" class="table-responsive" style="display:inline-block;">
           <p><b>Add-ons:</b>{{data.add_ons}}</p>
@@ -56,8 +59,9 @@
           <p><b>Attendant:</b>{{data.attendant_name}}</p>
           <p><b>Estimated Time:</b>{{mintohour(data.estimated_time)}}</p>
           <p><b>Total amount:</b>₱{{data.total_amount}}</p>
-          <p><b>Payment Type:</b><select class="input form-control" ng-model="selected_payment" ng-change="OnChangeofPaymentType(data,selected_payment)" ng-options="pt for pt in paymentType">
-          <option value="" disabled>Choose Payment Type Here..</option></p>
+          <p><b>Payment Type:</b><select class="input form-control" ng-model="selected_payment" ng-change="OnChangeofPaymentType(data,selected_payment,$index)" ng-options="pt for pt in paymentType">
+          <option value="" disabled>Choose Payment Type Here..</option>
+          </p>
         </div>
       </td>
     </tr>
