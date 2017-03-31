@@ -12,6 +12,7 @@ class HealingPackages(Resource):
 		status = 200
 
 		services = Healing_Packages_data()
+		services.get_healing_packages_data()
 		result = services.get_data()
 		retval = result
 
@@ -21,7 +22,24 @@ class HealingPackages(Resource):
 		pass
 
 	def put(self):
-		pass
+		status = 200
+
+		update_args = dict()
+		args_update_list = [
+			('healing_packages_id', int, 'json', None, True),
+			('member_price', int, 'json', None, False),
+			('non_member_price', int, 'json', None, False),
+			('duration', int, 'json', None, False),
+		]
+
+		for args in args_update_list:
+			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])
+
+		update_args = self.__reqparser.parse_args()
+		services = Healing_Packages_data()
+		services.edit_healing_packages_data(**update_args)
+
+		return status
 
 	def delete(self):
 		pass

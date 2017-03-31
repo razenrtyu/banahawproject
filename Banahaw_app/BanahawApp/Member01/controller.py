@@ -11,7 +11,7 @@ class Member01(Resource):
 		retval = dict()
 		status = 200
 
-		args_list = [('member00id',str,'args',None,True)]
+		args_list = [('member00id',str,'args',None,False)]
 
 		for args in args_list:
 			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])
@@ -19,13 +19,29 @@ class Member01(Resource):
 		self.__args = self.__reqparser.parse_args()
 
 		services = Member01_data(**self.__args)
+		services.getmemberdata()
 		result = services.get_data()
 		retval = result
 
 		return retval,status
 
 	def post(self):
-		pass
+		retval = dict()
+		status = 201
+
+		args_list = [('member00id',str,'json',None,True),
+					 ('relationship',str,'json',None,True),
+					 ('name',str,'json',None,True)]
+
+		for args in args_list:
+			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])
+
+		self.__args = self.__reqparser.parse_args()
+
+		services = Member01_data()
+		services.postmemberdata(**self.__args)
+
+		return status
 
 	def put(self):
 		pass
