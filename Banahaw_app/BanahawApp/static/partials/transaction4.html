@@ -5,14 +5,11 @@
 
 <div id="main">
 
-<h3>Attendant Report</h3>
+<h3>Transaction History</h3>
 <br>
 <div id="divmain2">
 <table class="table-responsive" style="border-spacing: 20px; border-collapse: separate;">
   <tr>
-      <td>
-      <input class="input-top form-control viewtxtbox" type="text" placeholder="Enter Name of Attendant:" autofocus="true" ng-model="name" uib-typeahead="att.attendant_name for att in attendants | filter:$viewValue" typeahead-on-select="checkattendant($item)">
-      </td>
       <td><span>&nbsp&nbsp</span></td>
       <td>
       <datepicker datepicker-class="class1" date-format="yyyy-MM-dd" >
@@ -39,6 +36,7 @@
 <br>
 <div id="div-container">
   <div id="divmain3" class="table-responsive" style="width:100% !important">
+
   <table class="table table-bordered" style="font-size:11px;" bordercolor="black">
     <thead>
         <div style="background-color: #2E8B57;width: 100%; height: 50px;">
@@ -47,21 +45,23 @@
     <thead>
       <tr style="background-color: #D3D3D3">
         <th>Date</th>
+        <th>Transaction Type</th>
         <th>Client Name</th>
-        <th>Time Spent</th>
-        <th>Services Done / Membership Sold</th>
+        <th>Services Done</th>
+        <th>Add - ons</th>
+        <th>Attendant</th>
         <th>Amount Paid by Client</th>
-        <th>Commision/Incentive</th>
       </tr>
     </thead>
-    <tbody ng-repeat="data in attreports">
+    <tbody ng-repeat="data in history">
       <tr>
-        <td ng-bind="data.datecreated" class="li-table"></td>
-        <td ng-bind="data.clientname" class="li-table"></td>
-        <td ng-bind="data.timespent" class="li-table"></td>
+        <td ng-bind="data.date" class="li-table"></td>
+        <td ng-bind="data.transactiontype" class="li-table"></td>
+        <td ng-bind="data.client" class="li-table"></td>
         <td ng-bind="data.services" class="li-table"></td>
-        <td ng-bind="data.amountpaid" class="li-table"></td>
-        <td ng-bind="data.commision_on_service" class="li-table"></td>
+        <td ng-bind="data.addons" class="li-table"></td>
+        <td ng-bind="data.attendant" class="li-table"></td>
+        <td ng-bind="data.total" class="li-table"></td>
       </tr>
     </tbody>
   </table>

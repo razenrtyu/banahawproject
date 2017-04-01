@@ -1,5 +1,9 @@
 import datetime
-import flask_excel as excel
+import openpyxl
+from openpyxl.styles import Color, PatternFill, Font, Alignment
+from openpyxl.cell import Cell
+import os
+from flask import request
 from sqlalchemy import and_
 from BanahawApp import Session,Mini_func, app
 from BanahawApp.table import T_Transaction, T_Member00, T_Attendants01, T_Attendants
@@ -214,6 +218,7 @@ class Summary_report(object):
 		self.__get_members(ds, de)
 		self.__get_members_upg(ds, de)
 
+
 		if self.__retval:
 			total_allowance = 0
 			total_comm = 0
@@ -227,13 +232,112 @@ class Summary_report(object):
 
 			retval['data'] = self.__retval
 			retval['totals'] = {
-				'total_allowance': total_allowance,
-				'total_comm': total_comm,
-				'total_incentives': total_incentives
+				'TOTAL ALLOWANCE': total_allowance,
+				'TOTAL COMMISION': total_comm,
+				'TOTAL INCENTIVES ON MEMBERSHIP': total_incentives,
+				'TOTAL GROSS SALES FOR DAY': 0,
+				'TOTAL NET SALES': 0
 			}
 
+		dateds = datetime.datetime.strptime(ds, '%Y-%m-%d')
+		datede = datetime.datetime.strptime(de, '%Y-%m-%d')
+		delta = datetime.timedelta(days=1)
+		headers = ['Name of Employee']
+
+		while dateds <= datede:
+			key = dateds.strftime('%B-%d-%Y')
+			headers.append(key)
+			dateds += delta
+
+		headers.append('Allowance')
+		headers.append('Commision on Service')
+		headers.append('Incentive on Membership')
+		headers.append('Total per Attendant')
+
+
+		self.__make_excelfile(retval, headers)
 
 		return retval
+
+	def __make_excelfile(self, jsondata, headers):
+
+		temp_list = list()
+		for key, val in jsondata['data'].items():
+			temp_dict = dict()
+			for key2, val2 in val.items():
+				if key2 == 'attendant_name':
+					temp_dict['Name of Employee'] = val2
+				elif key2 == 'mem_incentive':
+					temp_dict['Incentive on Membership'] = val2
+				elif key2 == 'service_comm':
+					temp_dict['Commision on Service'] = val2
+				elif key2 == 'total_per_att':
+					temp_dict['Total per Attendant'] = val2
+				elif key2 =='allowance':
+					temp_dict['Allowance'] = val2
+				else:
+					temp_dict[key2] = val2
+			temp_list.append(temp_dict)
+
+		filename = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+		folderpath = os.path.join(os.getcwd(), 'Reports')
+		if not os.path.exists(folderpath):
+			os.makedirs(folderpath)
+
+		wb = openpyxl.Workbook()
+		sheet = wb.active
+		sheet.title = 'Sales Reports Summary'
+
+		for row, data in enumerate(temp_list):
+			excel_row = row + 1
+			for index, key in enumerate(headers):
+				if excel_row == 1:
+					x = sheet.cell(row=excel_row, column=index + 1)
+					x.value = key
+					xcell = sheet[x.coordinate]
+					ft = Font(bold=True)
+					al = Alignment(horizontal='center', vertical='center')
+					xcell.font = ft
+					xcell.alignment = al
+					sheet.row_dimensions[int(x.coordinate[-1:])].height = 45
+					sheet.column_dimensions[str(x.coordinate[:-1])].width = 25
+				else:
+					x = sheet.cell(row=excel_row, column=index + 1)
+					xcell = sheet[x.coordinate]
+					al = Alignment(horizontal='center', vertical='center')
+					xcell.alignment = al
+					x.value = data[key]
+
+		rownum = len(temp_list) + 6
+		colorcoding = {
+			'TOTAL ALLOWANCE': 'ff8080',
+			'TOTAL COMMISION': 'ffd6cc',
+			'TOTAL INCENTIVES ON MEMBERSHIP': 'ccccff',
+			'TOTAL GROSS SALES FOR DAY': 'ccffdd',
+			'TOTAL NET SALES': 'e6ccb3'
+		}
+		for key,val in jsondata['totals'].items():
+			ft = Font(italic=True)
+			al = Alignment(horizontal='center', vertical='center')
+			fl = PatternFill(start_color=colorcoding[key], end_color=colorcoding[key], fill_type='solid')
+			mergecells = 'A{0}:B{0}'.format(rownum)
+			sheet.merge_cells(mergecells)
+
+			sheet['A{0}'.format(rownum)].font = ft
+			sheet['A{0}'.format(rownum)].alignment = al
+			sheet['A{0}'.format(rownum)].fill = fl
+			sheet['A{0}'.format(rownum)] = key
+
+			sheet['C{0}'.format(rownum)].alignment = al
+			sheet['C{0}'.format(rownum)].fill = fl
+			sheet['C{0}'.format(rownum)] = val
+
+			rownum += 1
+
+		wb.save(os.path.join(folderpath, 'Sales_report_' + filename + '.xlsx'))
+
+
+
 
 	def __get_attendants(self, ds, de):
 		result = self.__session.query(T_Attendants).all()
@@ -336,7 +440,6 @@ class Summary_report(object):
 					addonscomm += 50
 
 		retval = addonscomm + servicecomm
-		print(retval)
 
 		return retval
 
@@ -377,9 +480,9 @@ class Summary_report(object):
 
 			self.__retval[data.attendantid]['mem_incentive'] += total
 
-@app.route("/download-reports", methods=['GET'])
+@app.route("/download-reports", methods=['POST'])
 def download_file():
 	data = request.get_json()
-	print(data)
 	name = datetime.datetime.now().strftime('%B-%d-%Y') + '_Summary_Report'
-	# return excel.make_response_from_records(samp, "xlsx",200,name)
+
+	return excel.make_response_from_records(x, "xlsx",200,name)

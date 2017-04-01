@@ -22,6 +22,11 @@ MyApp2.config(['$routeProvider',function($routeProvider){
 		controller : "TransactionController3"
 
 	})
+	.when('/transaction/history',{
+		templateUrl : "partials/transaction4.html",
+		controller : "TransactionController4"
+
+	})
 	.when('/member/addmember',{
 		templateUrl : "partials/addmember.html",
 		controller : "AddMemberController"
@@ -126,7 +131,12 @@ MyApp2.controller("TransactionController",['$scope','Requests','$uibModal',funct
 	Requests.getMembers().then(function(response){
 		if (response.status = 'OK'){
 			var data = response.data.data
-			$scope.Members = data
+			Requests.getMembers01all().then(function(response){
+				if (response.status = 'OK'){
+					var data2 = response.data.data
+					$scope.Members00 = data.concat(data2)
+				};
+			});
 		};
 	});
 
@@ -233,22 +243,20 @@ MyApp2.controller("TransactionController",['$scope','Requests','$uibModal',funct
 		$scope.HnShealingpackages = true
 		$scope.HnSregularservies = true
 
-   		$scope.MembershipType = hs.membertype
+		if (hs.membertype){
+			$scope.MembershipType = hs.membertype
+		}else if (hs.relationship){
+			$scope.MembershipType = hs.relationship
+		};
+
    		if ($scope.MembershipType=='Personalized'){
 			$scope.transac_inputs = true;
 			$scope.HideSubmember = true;
    		};
 
    		if ($scope.MembershipType=='Family'){
-
-			Requests.getMembers01(hs.member00id).then(function(response){
-				if (response.status = 'OK'){
-					var data = response.data.data
-					$scope.Members01 = data
-					$scope.transac_inputs = true;
-					$scope.HideSubmember = false;
-				};
-			});
+			$scope.transac_inputs = true;
+			$scope.HideSubmember = false;
    		};
    	};
 
@@ -316,7 +324,6 @@ MyApp2.controller("TransactionController",['$scope','Requests','$uibModal',funct
    						 'service_price':service_price,
    						 'add_ons_price':$scope.add_ons_price.join()
    						}
-   		json_data['submembername'] = $scope.sub_name
 		Requests.postTransaction(json_data).then(function(response){
 			if (response.status = 'OK'){
 
@@ -365,7 +372,6 @@ MyApp2.controller("PopupCont",function($scope,$uibModalInstance,$route,data){
 	$scope.AttendantName = data.attendant_name;
 	$scope.EstimatedTime = $scope.mintohour(data.estimated_time);
 	$scope.Amount = data.total_amount;
-	$scope.Submem = data.submembername;
 
 	$scope.close = function(){
 		$uibModalInstance.dismiss('OK');
@@ -667,6 +673,30 @@ MyApp2.controller("TransactionController3",['$scope','$route','Requests','$uibMo
 	};
 
 	$interval(function(){callatinterval();},60000);
+
+}]);
+
+MyApp2.controller('TransactionController4',['$scope','Requests',function($scope,Requests){
+	$scope.StartSearch = function(sdate,edate){
+		$scope.history = []
+		Requests.getTransactionbyDate2(sdate,edate).then(function(response){
+			if(response.status = 'OK'){
+				var data = response.data.data
+				angular.forEach(data, function(value, key){
+					var tempdict = {
+						'date': value.datecreated.substring(0,10),
+						'transactiontype': value.transaction_type,
+						'client': value.client_name,
+						'services': value.service,
+						'addons': value.add_ons,
+						'total': value.total_amount,
+						'attendant': value.attendant_name
+					};
+					$scope.history.push(tempdict)
+				});
+			};
+		});
+	}
 
 }]);
 
@@ -2143,6 +2173,12 @@ MyApp2.factory('Requests',function($http){
 				return $http({
 				method:'GET',
 				url:'http://localhost:5000/transactions'+'?from='+ds+'&'+'to='+de+'&'+'attendantid='+id,
+				});
+			},
+			getTransactionbyDate2:function(ds,de){
+				return $http({
+				method:'GET',
+				url:'http://localhost:5000/transactions'+'?from='+ds+'&'+'to='+de,
 				});
 			},
 			postTransaction:function(param){

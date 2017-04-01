@@ -5,11 +5,11 @@
 
 <div id="main">
 
-<h3>{{MembershipType}}</h3>
+<h3 ng-if="MembershipType">{{MembershipType}}</h3>
 <br>
 
 <div id="validation">
-  <input class="input-top form-control" type="text" placeholder="Enter Name of Customer:" autofocus="true" ng-model="name" uib-typeahead="m.name for m in Members | filter:$viewValue" typeahead-on-select="MemberValidation($item)">
+  <input class="input-top form-control" type="text" placeholder="Enter Name of Customer:" autofocus="true" ng-model="name" uib-typeahead="m.name for m in Members00 | filter:$viewValue" typeahead-on-select="MemberValidation($item)">
   <br>
 </div>
 
@@ -31,12 +31,12 @@
                 <tbody>
 
                   <tr ng-hide="HideSubmember">
-                    <td>Sub Member Name</td>
+<!--                     <td>Sub Member Name</td>
                     <td></td>
                     <td>
                       <input class="input-top form-control" type="text" placeholder="Enter Sub Member Name:" autofocus="true" ng-model="sub_name" uib-typeahead="m01.name for m01 in Members01 | filter:$viewValue" typeahead-on-select="OnEntersubmember($item)">
                     </td>
-                  </tr>
+                  </tr> -->
 
                   <tr>
                     <td>Branch</td>
