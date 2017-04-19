@@ -7,7 +7,7 @@ class Member01(Resource):
 		self.__reqparser = reqparse.RequestParser()
 		self.__args = dict()
 
-	def get(self):
+	def get(self, char=None):
 		retval = dict()
 		status = 200
 
@@ -19,7 +19,12 @@ class Member01(Resource):
 		self.__args = self.__reqparser.parse_args()
 
 		services = Member01_data(**self.__args)
-		services.getmemberdata()
+
+		if char:
+			services.get_customize_members(char)
+		else:
+			services.getmemberdata()
+
 		result = services.get_data()
 		retval = result
 

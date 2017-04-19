@@ -1,8 +1,10 @@
 import datetime
-import openpyxl
+import operator
+from openpyxl import Workbook, drawing
 from openpyxl.styles import Color, PatternFill, Font, Alignment
 from openpyxl.cell import Cell
 import os
+import re
 from flask import request
 from sqlalchemy import and_
 from BanahawApp import Session,Mini_func, app
@@ -206,283 +208,470 @@ class Summary_report(object):
 		self.__args = kwargs
 		self.__retval = dict()
 
+		# column start for insert of image
+		self.__column = 0
+
 	def get_reports_data(self):
-		retval = dict()
+		self.__get_attendants()
+		self.__insert_dates()
+		self.__get_attendants01()
+		self.__get_transactions()
+		self.__get_membership()
+		self.__get_upgraded()
 
-		ds = self.__args.get('from',None)
-		de = self.__args.get('to',None)
+		total_dict = self.__make_total_dict(self.__retval)
 
-		self.__get_attendants(ds, de)
-		self.__get_rawtime(ds, de)
-		self.__get_transactions(ds, de)
-		self.__get_members(ds, de)
-		self.__get_members_upg(ds, de)
+		filename = self.__generate_excelfil(self.__retval, total_dict)
 
+		return filename
 
-		if self.__retval:
-			total_allowance = 0
-			total_comm = 0
-			total_incentives = 0
+	def __get_attendants(self):
+		result = self.__session.query(T_Attendants).all()
 
-			for attid, data in self.__retval.items():
-				self.__retval[attid]['total_per_att'] = data.get('service_comm') + data.get('mem_incentive')
-				total_allowance += data.get('allowance', 0)
-				total_comm += data.get('service_comm', 0)
-				total_incentives += data.get('mem_incentive')
-
-			retval['data'] = self.__retval
-			retval['totals'] = {
-				'TOTAL ALLOWANCE': total_allowance,
-				'TOTAL COMMISION': total_comm,
-				'TOTAL INCENTIVES ON MEMBERSHIP': total_incentives,
-				'TOTAL GROSS SALES FOR DAY': 0,
-				'TOTAL NET SALES': 0
+		for d in result:
+			self.__retval[d.attendantid] = {
+				'attendant_name': d.attendant_name,
+				'allowance_perday': d.allowance,
+				'allowance_total': 0,
+				'addons_total': 0,
+				'commision_total_addons': 0,
+				'services_total': 0,
+				'commision_total_service': 0,
+				'personalized_total': 0,
+				'incentive_total_personalized': 0,
+				'family_total': 0,
+				'incentive_total_family': 0,
+				'upgraded_total': 0,
+				'incentive_total_upgraded': 0,
+				'dates': dict()
 			}
 
-		dateds = datetime.datetime.strptime(ds, '%Y-%m-%d')
-		datede = datetime.datetime.strptime(de, '%Y-%m-%d')
+	def __insert_dates(self):
+		dateend = datetime.datetime.strptime(self.__args['to'], '%Y-%m-%d')
 		delta = datetime.timedelta(days=1)
-		headers = ['Name of Employee']
 
-		while dateds <= datede:
-			key = dateds.strftime('%B-%d-%Y')
-			headers.append(key)
-			dateds += delta
+		for attendantid in self.__retval.keys():
+			datestart = datetime.datetime.strptime(self.__args['from'], '%Y-%m-%d')
 
-		headers.append('Allowance')
-		headers.append('Commision on Service')
-		headers.append('Incentive on Membership')
-		headers.append('Total per Attendant')
+			while datestart <= dateend:
+				self.__retval[attendantid]['dates'][datestart.strftime('%B-%d-%Y')] = 'AWOL'
+
+				datestart += delta
 
 
-		self.__make_excelfile(retval, headers)
+	def __get_attendants01(self):
+		search_filter = [getattr(T_Attendants01, 'trandate').between(self.__args['from'], self.__args['to'])]
+
+		result = self.__session.query(T_Attendants01).filter(*search_filter).order_by(
+			T_Attendants01.attendantid.asc(), T_Attendants01.trandate.asc()).all()
+
+		for d in result:
+			if not d.timein:
+				timein = 'No Time In'
+			else:
+				timein = d.timein
+
+			if not d.timeout:
+				timeout = 'No Time Out'
+			else:
+				timeout = d.timeout
+
+			self.__retval[d.attendantid]['dates'][d.trandate.strftime('%B-%d-%Y')] = timein + ' - ' + timeout
+
+			x = self.__compute_allowance(d.timein, d.timeout, self.__retval[d.attendantid]['allowance_perday'])
+			self.__retval[d.attendantid]['allowance_total'] += x
+
+	def __compute_allowance(self, timein, timeout, allowance):
+
+		if any([not timein, not timeout]):
+			return 0
+
+		per_hour = allowance / 12
+
+		timein = datetime.datetime.strptime(timein, '%I:%M %p')
+		timeout = datetime.datetime.strptime(timeout, '%I:%M %p')
+		timediff = timeout - timein
+		hours = int(timediff.seconds / 3600)
+		retval = int(per_hour * hours)
 
 		return retval
 
-	def __make_excelfile(self, jsondata, headers):
+	def __get_transactions(self):
+		search_filter = [getattr(T_Transaction, 'datecreated').between(self.__args['from'], self.__args['to'])]
 
-		temp_list = list()
-		for key, val in jsondata['data'].items():
-			temp_dict = dict()
-			for key2, val2 in val.items():
-				if key2 == 'attendant_name':
-					temp_dict['Name of Employee'] = val2
-				elif key2 == 'mem_incentive':
-					temp_dict['Incentive on Membership'] = val2
-				elif key2 == 'service_comm':
-					temp_dict['Commision on Service'] = val2
-				elif key2 == 'total_per_att':
-					temp_dict['Total per Attendant'] = val2
-				elif key2 =='allowance':
-					temp_dict['Allowance'] = val2
-				else:
-					temp_dict[key2] = val2
-			temp_list.append(temp_dict)
+		result = self.__session.query(T_Transaction).filter(*search_filter)
 
-		filename = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-		folderpath = os.path.join(os.getcwd(), 'Reports')
-		if not os.path.exists(folderpath):
-			os.makedirs(folderpath)
+		temp_dict = dict()
+		for d in result:
+			comms = self.__compute_commision(d.service,d.service_price,d.transaction_type,d.add_ons_price)
+			self.__retval[d.attendantid]['commision_total_service'] += comms[0]
+			self.__retval[d.attendantid]['commision_total_addons'] += comms[1]
+			self.__retval[d.attendantid]['addons_total'] += self.__compute_addons(d.add_ons_price)
+			self.__retval[d.attendantid]['services_total'] += self.__compute_services(d.service_price)
 
-		wb = openpyxl.Workbook()
-		sheet = wb.active
-		sheet.title = 'Sales Reports Summary'
+	def __compute_services(self, serviceprice):
+		return int(serviceprice)
 
-		for row, data in enumerate(temp_list):
-			excel_row = row + 1
-			for index, key in enumerate(headers):
-				if excel_row == 1:
-					x = sheet.cell(row=excel_row, column=index + 1)
-					x.value = key
-					xcell = sheet[x.coordinate]
-					ft = Font(bold=True)
-					al = Alignment(horizontal='center', vertical='center')
-					xcell.font = ft
-					xcell.alignment = al
-					sheet.row_dimensions[int(x.coordinate[-1:])].height = 45
-					sheet.column_dimensions[str(x.coordinate[:-1])].width = 25
-				else:
-					x = sheet.cell(row=excel_row, column=index + 1)
-					xcell = sheet[x.coordinate]
-					al = Alignment(horizontal='center', vertical='center')
-					xcell.alignment = al
-					x.value = data[key]
-
-		rownum = len(temp_list) + 6
-		colorcoding = {
-			'TOTAL ALLOWANCE': 'ff8080',
-			'TOTAL COMMISION': 'ffd6cc',
-			'TOTAL INCENTIVES ON MEMBERSHIP': 'ccccff',
-			'TOTAL GROSS SALES FOR DAY': 'ccffdd',
-			'TOTAL NET SALES': 'e6ccb3'
-		}
-		for key,val in jsondata['totals'].items():
-			ft = Font(italic=True)
-			al = Alignment(horizontal='center', vertical='center')
-			fl = PatternFill(start_color=colorcoding[key], end_color=colorcoding[key], fill_type='solid')
-			mergecells = 'A{0}:B{0}'.format(rownum)
-			sheet.merge_cells(mergecells)
-
-			sheet['A{0}'.format(rownum)].font = ft
-			sheet['A{0}'.format(rownum)].alignment = al
-			sheet['A{0}'.format(rownum)].fill = fl
-			sheet['A{0}'.format(rownum)] = key
-
-			sheet['C{0}'.format(rownum)].alignment = al
-			sheet['C{0}'.format(rownum)].fill = fl
-			sheet['C{0}'.format(rownum)] = val
-
-			rownum += 1
-
-		wb.save(os.path.join(folderpath, 'Sales_report_' + filename + '.xlsx'))
-
-
-
-
-	def __get_attendants(self, ds, de):
-		result = self.__session.query(T_Attendants).all()
-
-		for data in result:
-			self.__retval[data.attendantid] = {
-				'attendant_name': data.attendant_name,
-				'service_comm': 0,
-				'allowance':0,
-				'mem_incentive': 0
-			}
-
-			datestart = datetime.datetime.strptime(ds, '%Y-%m-%d')
-			dateend = datetime.datetime.strptime(de, '%Y-%m-%d')
-			delta = datetime.timedelta(days=1)
-
-			total_allwowance = 0
-			while datestart <= dateend:
-				key = datestart.strftime('%B-%d-%Y')
-				self.__retval[data.attendantid][key] = 'No Time In - No Time Out'
-				total_allwowance += data.allowance
-				datestart += delta
-
-			# assign total allowance
-			self.__retval[data.attendantid]['allowance'] = total_allwowance
-
-	def __get_rawtime(self, ds, de):
-		search_filter = list()
-
-		search_filter.append(getattr(T_Attendants01, 'trandate').between(ds,de))
-
-		result = self.__session.query(T_Attendants01).filter(and_(*search_filter)).all()
-		for data in result:
-			if not data.timein:
-				timein = 'No Time In'
-			else:
-				timein = data.timein
-
-			if not data.timeout:
-				timeout = 'No Time Out'
-			else:
-				timeout = data.timeout
-
-			key = data.trandate.strftime('%B-%d-%Y')
-
-			self.__retval[data.attendantid][key] = timein + ' - ' + timeout
-
-	def __get_transactions(self, ds, de):
-		search_filter = list()
-
-		search_filter.append(getattr(T_Transaction, 'datecreated').between(ds,de))
-		search_filter.append(getattr(T_Transaction, 'active') == 0)
-
-		result = self.__session.query(T_Transaction).filter(
-			and_(*search_filter)).order_by(T_Transaction.attendantid).all()
-
+	def __compute_addons(self, addonsprice):
 		total = 0
 
-		for data in result:
-			if data.attendantid not in self.__retval:
-				total = 0
-				total2 = 0
+		if not addonsprice:
+			return 0
 
-			comm = self.__get_commision_on_services(data.service,data.service_price,
-											 		data.transaction_type,data.add_ons_price)
-			total += comm
+		for price in addonsprice.split(','):
+			total += int(price)
 
-			# assign total commision
-			self.__retval[data.attendantid]['service_comm'] = total
+		return total
 
-
-	def __get_commision_on_services(self, service, serviceprice, trantype, add_ons_price):
+	def __compute_commision(self, service, serviceprice, trantype, add_ons_price):
 		ignore_list = ['5-in-1 Signature Massage', 'Relaxing Swedish Massage']
-		retval = 0
+		retval = list()
 
+		# get services commisions
 		servicecomm = 0
 		if service not in ignore_list:
 			if serviceprice is None:
 				serviceprice = 0
 
 			servicecomm = int(serviceprice) * 0.10
-		if not add_ons_price:
-			return servicecomm
 
-		addonsprices = add_ons_price.split(',')
+		retval.append(servicecomm)
+
+		# get addons commisions
 		addonscomm = 0
+		if not add_ons_price:
+			addonscomm = 0
+		else:
+			addonsprices = add_ons_price.split(',')
+			if trantype in ['Walk-In','Non-Member']:		
+				for price in addonsprices:
+					if int(price) <= 299:
+						addonscomm += 25
+					elif int(price) >= 300:
+						addonscomm += 50
 
-		if trantype in ['Walk-In','Non-Member']:		
-			for price in addonsprices:
-				if int(price) <= 299:
-					addonscomm += 25
-				elif int(price) >= 300:
-					addonscomm += 50
+			elif trantype == 'Member':
+				for price in addonsprices:
+					if int(price) <= 149:
+						addonscomm += 25
+					elif int(price) >= 150:
+						addonscomm += 50
 
-		elif trantype == 'Member':
-			for price in addonsprices:
-				if int(price) <= 149:
-					addonscomm += 25
-				elif int(price) >= 150:
-					addonscomm += 50
-
-		retval = addonscomm + servicecomm
+		retval.append(addonscomm)
 
 		return retval
 
-	def __get_members(self, ds, de):
-		retval = list()
-		search_filter = list()
+	def __get_membership(self):
+		search_filter = [getattr(T_Member00, 'datecreated').between(self.__args['from'], self.__args['to'])]
 
-		search_filter.append(getattr(T_Member00, 'datecreated').between(ds, de))
+		result = self.__session.query(T_Member00).filter(*search_filter).all()
 
-		result = self.__session.query(T_Member00).filter(and_(*search_filter)).all()
+		for d in result:
+			if any([d.upgraded, d.upgraded_by]):
+				self.__retval[d.attendantid]['personalized_total'] += d.membershipcost / 2
+				self.__retval[d.attendantid]['incentive_total_personalized'] += 25
+				continue
 
-		total = 0
+			if d.membertype == 'Personalized':
+				self.__retval[d.attendantid]['personalized_total'] += d.membershipcost
+				self.__retval[d.attendantid]['incentive_total_personalized'] += 25
+			elif d.membertype == 'Family':
+				self.__retval[d.attendantid]['family_total'] += d.membershipcost
+				self.__retval[d.attendantid]['incentive_total_family'] += 50
 
-		for data in result:
-			if data.upgraded:
-				total += 25
+	def __get_upgraded(self):
+		search_filter = [getattr(T_Member00, 'upgraded').between(self.__args['from'], self.__args['to'])]		
 
-			else:
-				comm = 25 if data.membertype == 'Personalized' else 50
+		result = self.__session.query(T_Member00).filter(*search_filter).all()
 
-				total += comm
+		for d in result:
+			self.__retval[d.upgraded_by]['upgraded_total'] += d.membershipcost / 2
+			self.__retval[d.upgraded_by]['incentive_total_upgraded'] += 25
 
-			self.__retval[data.attendantid]['mem_incentive'] = total
+	def __make_total_dict(self, data):
+		retval = {
+			'total_allowance': 0,
+			'total_commision': 0,
+			'total_incentive': 0,
+			'total_gross_sales': 0,
+			'operational_expenses': 0,
+			'total_net_sales': 0,
+			'total_addons': 0,
+			'total_services': 0,
+			'total_members_p': 0,
+			'total_members_f': 0,
+			'total_members_u': 0
+		}
 
-	def __get_members_upg(self, ds, de):
-		search_filter = list()
+		for key, value in data.items():
+			retval['total_allowance'] += value.get('allowance_total', 0)
+			retval['total_commision'] += sum([value.get('commision_total_addons', 0), value.get('commision_total_service', 0)])
+			retval['total_incentive'] += sum([value.get('incentive_total_personalized', 0),
+											  value.get('incentive_total_family', 0),
+											  value.get('incentive_total_upgraded', 0)])
+			retval['total_gross_sales'] += sum([value.get('addons_total', 0),
+											    value.get('services_total', 0),
+											    value.get('personalized_total', 0),
+											    value.get('family_total', 0),
+											    value.get('upgraded_total', 0)])
+			retval['total_addons'] +=  value.get('addons_total', 0)
+			retval['total_services'] +=  value.get('services_total', 0)
+			retval['total_members_p'] +=  value.get('personalized_total', 0)
+			retval['total_members_f'] +=  value.get('family_total', 0)
+			retval['total_members_u'] +=  value.get('upgraded_total', 0)
 
-		search_filter.append(getattr(T_Member00, 'upgraded').between(ds, de))
-		search_filter.append(getattr(T_Member00, 'upgraded_by') != None)
+		retval['total_net_sales'] = (retval['total_gross_sales'] - 
+									 retval['total_incentive'] - 
+									 retval['total_commision'] - 
+									 retval['total_allowance'] -
+									 retval['operational_expenses'])
 
-		result = self.__session.query(T_Member00).filter(and_(*search_filter)).all()
+		return retval
 
-		total = 0
-		total2 = 0
+	def __generate_excelfil(self, attendantdata, totaldata):
+		wb = Workbook()
+		ws = wb.active
 
-		for data in result:
-			total += 25
+		ws.title = "Summary Report"
+		ws.sheet_properties.tabColor = '1072BA'
 
-			self.__retval[data.attendantid]['mem_incentive'] += total
+		self.__insert_first_column(ws, attendantdata)
+		self.__insert_all_data_to_excel(ws, attendantdata)
+		self.__insert_totals(ws, totaldata)
 
-@app.route("/download-reports", methods=['POST'])
-def download_file():
-	data = request.get_json()
-	name = datetime.datetime.now().strftime('%B-%d-%Y') + '_Summary_Report'
+		filename = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
-	return excel.make_response_from_records(x, "xlsx",200,name)
+		folderpath = os.path.join(os.getcwd(), 'Reports')
+		if not os.path.exists(folderpath):
+			os.makedirs(folderpath)
+
+		retval = 'Sales_report_' + filename + '.xlsx'
+		wb.save(os.path.join(folderpath, retval))
+
+		return retval
+
+	def __insert_first_column(self, ws, data):
+		# insert dates to first column
+		for key, value in data.items():
+			row_count = 2
+
+			dates = list(value['dates'].keys())
+			dates.sort(key=lambda x: datetime.datetime.strptime(x, '%B-%d-%Y'))
+
+			for date in dates:
+				cell = ws.cell(row=row_count, column=1)
+				cell.value = date
+
+				# set fonts
+				ft = Font(bold=True)
+				al = Alignment(horizontal='center', vertical='center')
+				cell.font = ft
+				cell.alignment = al
+
+				# set width
+				coordinate = cell.coordinate
+				coor = re.split('(\d+)', coordinate)
+				ws.column_dimensions[str(coor[0])].width = 25
+
+				row_count += 1
+
+			additionalheader = ['Allowance', 'Commision on Service', 'Incentive on Membership', 'Total per Attendant']
+
+			row_count += 1
+			for header in additionalheader:
+				cell = ws.cell(row=row_count, column=1)
+				cell.value = header
+
+				# set fonts
+				ft = Font(bold=True)
+				al = Alignment(horizontal='center', vertical='center')
+				cell.font = ft
+				cell.alignment = al
+
+				row_count += 1
+
+			break
+
+	def __insert_all_data_to_excel(self, ws, data):
+		
+		column_count = 2
+		for key, value in data.items():
+			row_count = 1
+
+			dates = list(value['dates'].keys())
+			dates.sort(key=lambda x: datetime.datetime.strptime(x, '%B-%d-%Y'))
+			dates.insert(0, 'attendant_name')
+
+			for date in dates:
+				cell = ws.cell(row=row_count, column=column_count)
+
+				if date == 'attendant_name':
+					cell.value = value[date]
+
+					# set fonts
+					ft = Font(bold=True)
+					al = Alignment(horizontal='center', vertical='center')
+					cell.font = ft
+					cell.alignment = al
+
+					coordinate = cell.coordinate
+					coor = re.split('(\d+)', coordinate)
+					# set height and width of headers cell
+					ws.row_dimensions[int(coor[1])].height = 45
+					ws.column_dimensions[str(coor[0])].width = 25
+
+				else:
+					# set font
+					al = Alignment(horizontal='center', vertical='center')
+					cell.alignment = al
+
+					cell.value = value['dates'][date]
+
+				row_count += 1
+
+			additionalheader = ['Allowance', 'Commision on Service', 'Incentive on Membership', 'Total per Attendant']
+			row_count += 1
+			for header in additionalheader:
+				cell = ws.cell(row=row_count, column=column_count)
+				# set font
+				al = Alignment(horizontal='center', vertical='center')
+				cell.alignment = al
+
+				if header == 'Allowance':
+					cell.value = value['allowance_total']
+
+				elif header == 'Commision on Service':
+					val = sum([value.get('commision_total_addons', 0), value.get('commision_total_service', 0)])
+					cell.value = val
+
+				elif header == 'Incentive on Membership':
+					val = sum([value.get('incentive_total_personalized', 0),
+							   value.get('incentive_total_family', 0),
+							   value.get('incentive_total_upgraded', 0)])
+					cell.value = val
+
+				elif header == 'Total per Attendant':
+					val = sum([value['allowance_total'],
+							   value.get('commision_total_addons', 0),
+							   value.get('commision_total_service', 0),
+							   value.get('incentive_total_personalized', 0),
+							   value.get('incentive_total_family', 0),
+							   value.get('incentive_total_upgraded', 0)])
+					cell.value = val
+
+				row_count += 1
+
+			column_count += 1
+
+		self.__column = column_count + 1
+
+	def __insert_totals(self, ws, totaldata):
+		# insert banahaw image on start
+		cell = ws.cell(row=1, column=1)
+		img_path = os.path.join(os.getcwd(), 'BanahawApp', 'static', 'img', 'Untitled2.png')
+		img = drawing.image.Image(img_path)
+		ws.add_image(img, cell.coordinate)
+
+		# insert banahaw image
+		cell = ws.cell(row=1, column=self.__column)
+		img_path = os.path.join(os.getcwd(), 'BanahawApp', 'static', 'img', 'Untitled.png')
+		img = drawing.image.Image(img_path)
+		ws.add_image(img, cell.coordinate)
+
+		# insert color under the image
+		cell1 = ws.cell(row=6, column=self.__column)
+		cell2 = ws.cell(row=6, column=self.__column + 5)
+		mergecells = '{}:{}'.format(cell1.coordinate, cell2.coordinate)
+		ws.merge_cells(mergecells)
+		fl = PatternFill(start_color='2E8B57', end_color='2E8B57', fill_type='solid')
+		cell1.fill = fl
+
+		# insert totals
+		row_count = 7
+
+		# add blank for blank in excel
+		loop = list(totaldata.keys())
+		loop.append('blank')
+		loop.append('blank')
+
+		for index, key in enumerate(loop):
+
+			if index == 0:			
+				self.__merge_cell_insert_head(ws, row_count, 'Total On New Members Personalized', '993366')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_members_p'], '993366')
+			elif index == 1:
+				self.__merge_cell_insert_head(ws, row_count, 'Total On New Members Family', '994d33')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_members_f'], '994d33')
+			elif index == 2:
+				self.__merge_cell_insert_head(ws, row_count, 'Total On Upgraded Members to Family', '996633')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_members_u'], '996633')
+			elif index == 3:
+				self.__merge_cell_insert_head(ws, row_count, 'Total On Services/Packages/Promos', '998033')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_services'], '998033')
+			elif index == 4:
+				self.__merge_cell_insert_head(ws, row_count, 'Total On Add - Ons', '999933')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_addons'], '999933')
+			elif index == 5:
+				# blank
+				cell1 = ws.cell(row=row_count, column=self.__column)
+				cell2 = ws.cell(row=row_count, column=self.__column + 5)
+				mergecells = '{}:{}'.format(cell1.coordinate, cell2.coordinate)
+				ws.merge_cells(mergecells)
+			elif index == 6:
+				self.__merge_cell_insert_head(ws, row_count, 'Total Allowance', '339980')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_allowance'], '339980')
+			elif index == 7:
+				self.__merge_cell_insert_head(ws, row_count, 'Total Commision', '339999')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_commision'], '339999')
+			elif index == 8:
+				self.__merge_cell_insert_head(ws, row_count, 'Total Incentive on Membership', '334d99')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_incentive'], '334d99')
+			elif index == 9:
+				self.__merge_cell_insert_head(ws, row_count, 'Operational Expenses', '4d3399')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['operational_expenses'], '4d3399')
+			elif index == 10:
+				# blank
+				cell1 = ws.cell(row=row_count, column=self.__column)
+				cell2 = ws.cell(row=row_count, column=self.__column + 5)
+				mergecells = '{}:{}'.format(cell1.coordinate, cell2.coordinate)
+				ws.merge_cells(mergecells)
+			elif index == 11:
+				self.__merge_cell_insert_head(ws, row_count, 'Total Gross Sales', '99334d')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_gross_sales'], '99334d')
+			elif index == 12:
+				self.__merge_cell_insert_head(ws, row_count, 'Total Net Sales', '339966')
+				self.__merge_cell_insert_data(ws, row_count, totaldata['total_net_sales'], '339966')
+
+			row_count += 1
+
+		else:
+			cell1 = ws.cell(row=row_count, column=self.__column)
+			cell2 = ws.cell(row=row_count, column=self.__column + 5)
+			mergecells = '{}:{}'.format(cell1.coordinate, cell2.coordinate)
+			ws.merge_cells(mergecells)
+			fl = PatternFill(start_color='2E8B57', end_color='2E8B57', fill_type='solid')
+			cell1.fill = fl
+
+
+
+	def __merge_cell_insert_head(self, ws, row, value, color):
+		cell1 = ws.cell(row=row, column=self.__column)
+		cell2 = ws.cell(row=row, column=self.__column + 3)
+		mergecells = '{}:{}'.format(cell1.coordinate, cell2.coordinate)
+		ws.merge_cells(mergecells)
+		ft = Font(bold=True, italic=True, color=color)
+		al = Alignment(horizontal='center', vertical='center')
+		cell1.font = ft
+		cell1.alignment = al
+		cell1.value = value
+
+	def __merge_cell_insert_data(self, ws, row, value, color):
+		cell1 = ws.cell(row=row, column=self.__column + 4)
+		cell2 = ws.cell(row=row, column=self.__column + 5)
+		mergecells = '{}:{}'.format(cell1.coordinate, cell2.coordinate)
+		ws.merge_cells(mergecells)
+		ft = Font(bold=True, italic=True, color=color)
+		al = Alignment(horizontal='center', vertical='center')
+		cell1.font = ft
+		cell1.alignment = al
+		cell1.value = value

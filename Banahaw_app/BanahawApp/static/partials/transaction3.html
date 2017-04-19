@@ -22,8 +22,8 @@
       <th>Name</th>
       <th>Service Availed</th>
       <th>Attendant</th>
-      <th>Estimated time</th>
       <th>Time Started</th>
+      <th>End Time</th>
       <th></th>
     </tr>
   </thead>
@@ -37,8 +37,8 @@
       <td ng-bind="data.client_name" class="li-table"></td>
       <td ng-bind="data.service_type" class="li-table"></td>
       <td ng-bind="data.attendant_name" class="li-table"></td>
-      <td ng-bind="mintohour(data.estimated_time)" class="li-table"></td>
       <td ng-bind="data.started" class="li-table"></td>
+      <td ng-bind="data.endtime" class="li-table"></td>
       <td><button ng-click="cancelTransaction(data,$index)" type="button" class="btn btn-danger btn-xs">Cancel</button></td>
     </tr>
     <tr ng-show=data.show>

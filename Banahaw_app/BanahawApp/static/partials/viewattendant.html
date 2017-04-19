@@ -37,7 +37,8 @@
 </div>
 
 <br>
-<div id="div-container">
+<div ng-if="!showtable">NO RECORDS FOUND</div>
+<div id="div-container" ng-if="showtable">
   <div id="divmain3" class="table-responsive" style="width:100% !important">
   <table class="table table-bordered" style="font-size:11px;" bordercolor="black">
     <thead>

@@ -7,7 +7,7 @@ class Member00(Resource):
 		self.__reqparser = reqparse.RequestParser()
 		self.__args = dict()
 
-	def get(self):
+	def get(self, char=None):
 		retval = dict()
 		status = 200
 
@@ -25,7 +25,11 @@ class Member00(Resource):
 
 
 		members = Member00_data(**self.__args)
-		members.getmemberdata()
+		if char:
+			members.get_customize_members(char)
+		else:
+			members.getmemberdata()
+
 		result = members.get_data()
 		retval = result
 
@@ -45,7 +49,8 @@ class Member00(Resource):
 					 ('name', str, 'json', None, False),
 					 ('membershipcost', int, 'json', None, False),
 					 ('attendant_name', str, 'json', None, False),
-					 ('attendantid', int, 'json', None, False)]
+					 ('attendantid', int, 'json', None, False),
+					 ('datecreated', str, 'json', None, False)]
 
 		for args in args_list:
 			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])

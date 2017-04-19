@@ -47,6 +47,19 @@ class Member01_data(Mini_func):
 
 		self.__session.commit()
 
+	def get_customize_members(self, char):
+		sel_statement = """SELECT name, membertype from member00 where name like '%{0}%' union all
+						   SELECT name, relationship from member01 where name like '%{0}%' """.format(char)
+
+		result = self.__session.execute(sel_statement)
+
+		for d in result:
+			r = {
+				'name': d.name,
+				'membertype': d.membertype
+			}
+			self._retval.append(r)
+
 	def __del__(self):
 		if self.__session is not None:
 			self.__session.close()

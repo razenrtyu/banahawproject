@@ -28,6 +28,7 @@ CREATE TABLE `healing_packages` (
   `member_price` int(11) DEFAULT NULL,
   `non_member_price` int(11) DEFAULT NULL,
   `datecreated` datetime DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
   PRIMARY KEY (`healing_packages_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -38,7 +39,7 @@ CREATE TABLE `healing_packages` (
 
 LOCK TABLES `healing_packages` WRITE;
 /*!40000 ALTER TABLE `healing_packages` DISABLE KEYS */;
-INSERT INTO `healing_packages` VALUES (1,'Upper Back Pain Healing',400,800,'2016-12-30 19:48:58'),(2,'Lower Back Pain Healing',400,800,'2016-12-30 19:48:58'),(3,'Muscle Pain and Spasm Healing',400,800,'2016-12-30 19:48:58'),(4,'Relaxation and Healing',500,1000,'2016-12-30 19:48:58'),(5,'Take-all-you-can(TODOS-TODOS)',600,1200,'2016-12-30 19:48:58'),(6,'Foot Massage Theraphy',400,800,'2016-12-30 19:48:58'),(7,'Hand Massage Theraphy',400,800,'2016-12-30 19:48:58'),(8,'Cranial Healing Massage',400,800,'2016-12-30 19:48:58'),(9,'Extremities Healing Massage',600,1200,'2016-12-30 19:48:58');
+INSERT INTO `healing_packages` VALUES (1,'Upper Back Pain Healing',400,800,'2016-12-30 19:48:58',105),(2,'Lower Back Pain Healing',400,800,'2016-12-30 19:48:58',105),(3,'Muscle Pain and Spasm Healing',400,800,'2016-12-30 19:48:58',105),(4,'Relaxation and Healing',500,1000,'2016-12-30 19:48:58',105),(5,'Take-all-you-can(TODOS-TODOS)',600,1200,'2016-12-30 19:48:58',140),(6,'Foot Massage Theraphy',400,800,'2016-12-30 19:48:58',105),(7,'Hand Massage Theraphy',400,800,'2016-12-30 19:48:58',105),(8,'Cranial Healing Massage',400,800,'2016-12-30 19:48:58',105),(9,'Extremities Healing Massage',600,1200,'2016-12-30 19:48:58',140);
 /*!40000 ALTER TABLE `healing_packages` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-08 23:20:15
+-- Dump completed on 2017-05-04  0:21:26

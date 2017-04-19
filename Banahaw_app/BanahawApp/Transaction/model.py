@@ -31,6 +31,8 @@ class Transactions_data(Mini_func):
 				r = d.toJSONExcept()
 				time = datetime.datetime.strptime(r['datestart'],'%m/%d/%Y %H:%M')
 				r['started'] = time.time().strftime("%I:%M %p")
+				etime = time + datetime.timedelta(minutes=int(d.estimated_time))
+				r['endtime'] = etime.strftime("%I:%M %p")
 				self._retval.append(r)
 
 		elif querytype is not None:
@@ -40,6 +42,8 @@ class Transactions_data(Mini_func):
 				r = d.toJSONExcept()
 				time = datetime.datetime.strptime(r['datestart'],'%m/%d/%Y %H:%M')
 				r['started'] = time.time().strftime("%I:%M %p")
+				etime = time + datetime.timedelta(minutes=int(d.estimated_time))
+				r['endtime'] = etime.strftime("%I:%M %p")
 				self._retval.append(r)
 
 	def insert_transaction(self,**kwargs):
@@ -78,7 +82,7 @@ class Transactions_data(Mini_func):
 
 		for obj in self.__data:
 			for key in update_list:
-				if key in update_kwargs and update_kwargs[key] not in ('',None):
+				if key in update_kwargs and update_kwargs[key] is not None:
 					if key == 'dateend':
 						update_kwargs[key] = datetime.datetime.strptime(update_kwargs[key], '%m/%d/%Y, %I:%M:%S %p')
 					try:

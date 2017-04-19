@@ -43,12 +43,38 @@ class Attendants01_data(Mini_func):
 	def insert_rawtime(self, **kwargs):
 		attendant = T_Attendants01()
 
-		for key in kwargs:
-			try:
-				setattr(attendant,key,kwargs[key])
-			except TypeError:
-				continue
+		attendantid = kwargs.get('attendantid', 0)
+		trandate = kwargs.get('trandate', 0)
+		print(attendantid, trandate)
+		att_filter = [getattr(T_Attendants01, 'attendantid') == attendantid,
+					  getattr(T_Attendants01, 'trandate') == trandate]
 
-		self.__session.add(attendant)
+		if not attendantid or not trandate:
+			return None
 
-		self.__session.commit()
+		exist = self.__session.query(T_Attendants01).filter(*att_filter).first()
+		
+		if not exist:
+
+			for key in kwargs:
+				if kwargs[key]:
+					try:
+						setattr(attendant,key,kwargs[key])
+					except TypeError:
+						continue
+
+			self.__session.add(attendant)
+
+			self.__session.commit()
+
+		else:
+			update_list = ['timein', 'timeout']
+
+			for key in update_list:
+				if key in kwargs and kwargs[key]:
+					try:
+						setattr(exist,key,kwargs[key])
+					except TypeError:
+						continue
+
+			self.__session.commit()

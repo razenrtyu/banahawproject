@@ -5,7 +5,7 @@
 
 <div id="main">
 
-<h3>Setup Promo</h3>
+<h3>Services List</h3>
 <br>
 
 <div id="container">
@@ -13,7 +13,9 @@
   <ul class="nav nav-pills" style="margin-left: 10%;">
     <li class="active"><a data-toggle="pill" href="!#regservices">Regular Services</a></li>
     <li><a data-toggle="pill" href="!#healpackage">Healing Packages</a></li>
+    <li><a data-toggle="pill" href="!#facial">Facial Services</a></li>
     <li><a data-toggle="pill" href="!#add-ons">Add-ons</a></li>
+    <li><a data-toggle="pill" href="!#promo">Promo</a></li>
   </ul>
   <br>
 
@@ -182,6 +184,127 @@
 			</table>
 		</div>
     </div>
+
+    <div id="facial" class="tab-pane fade">
+      <input class="input form-control" class="fillup" type="text" name="name" placeholder="Search Facial Service Name..." ng-model="viewbyname4" style="width: 80% !important; margin-left: 10%;">
+	  <br>
+			<div id="divmain3" class="table-responsive">
+			<table class="table table-hover" style="font-size:11px;">
+			  <thead>
+			      <div style="background-color: #2E8B57;width: 100%; height: 50px;">
+			         
+			      </div>
+			  </thead>
+			  <thead>
+			    <tr style="background-color: #D3D3D3">
+				  <th></th>
+			      <th>Facial Service Name</th>
+			      <th>Member Price</th>
+			      <th>Non-Member Price</th>
+			      <th>Duration</th>
+			      <th></th>
+			      <th></th>
+			    </tr>
+			  </thead>
+			  <tbody ng-repeat="data in FacialServices | filter : viewbyname4">
+			    <tr>
+			      <td scope="row">
+			        <i class="fa fa-chevron-right" aria-hidden="true" ng-if=!data.show></i>
+			        <i class="fa fa-chevron-down" aria-hidden="true" ng-if=data.show></i>
+			        </td>
+			      <td ng-bind="data.facial_services_name" class="li-table"></td>
+			      <td class="li-table">
+			      		<span ng-if="!data.edit">{{data.member_price}}</span>
+			      		<input ng-if="data.edit" type="text" ng-model = "Fmem_price" ng-change = "Fmem_price_change(Fmem_price)">
+			      </td>
+			      <td class="li-table">
+			      		<span ng-if="!data.edit">{{data.non_member_price}}</span>
+			      		<input ng-if="data.edit" type="text" ng-model = "Fnon_mem_price" ng-change = "Fnon_mem_price_change(Fnon_mem_price)">
+			      </td>
+			      <td class="li-table">
+			      		<span ng-if="!data.edit">{{data.duration}}</span>
+			      		<input ng-if="data.edit" type="text" ng-model = "Fduration" ng-change = "Fduration_change(Fduration)">
+			      </td>
+			      <td>
+			      	  <button ng-click="editpromo4(data)" type="button" class="btn btn-warning btn-xs">
+			      			<span ng-if="!data.edit">Edit</span>
+			      			<span ng-if="data.edit">Cancel</span>
+			      	  </button>
+			      </td>
+			      <td><button ng-click="savepromo('facial_services',data.facial_services_id, Fmem_price,Fnon_mem_price,Fduration,data)" type="button" class="btn btn-success btn-xs" ng-if="data.edit">Save</button></td>
+			    </tr>
+			  </tbody>
+			</table>
+		</div>
+    </div>
+
+	<div id="promo" class="tab-pane fade">
+	      <input class="input form-control" class="fillup" type="text" name="name" placeholder="Search Promo Name..." ng-model="viewbyname5" style="width: 80% !important; margin-left: 10%;">
+		  <br>
+				<div id="divmain3" class="table-responsive">
+				<table class="table table-hover" style="font-size:11px;">
+				  <thead>
+				      <div style="background-color: #2E8B57;width: 100%; height: 50px;">
+				         
+				      </div>
+				  </thead>
+				  <thead>
+				    <tr style="background-color: #D3D3D3">
+					  <th></th>
+				      <th>Promo Name</th>
+				      <th>Member Price</th>
+				      <th>Non-Member Price</th>
+				      <th>Duration</th>
+				      <th>Datestart</th>
+				      <th>Dateend</th>
+				      <th>Active</th>
+				      <th></th>
+				      <th></th>
+				    </tr>
+				  </thead>
+				  <tbody ng-repeat="data in promos | filter : viewbyname5">
+				    <tr>
+				      <td scope="row">
+				        <i class="fa fa-chevron-right" aria-hidden="true" ng-if=!data.show></i>
+				        <i class="fa fa-chevron-down" aria-hidden="true" ng-if=data.show></i>
+				        </td>
+				      <td ng-bind="data.description" class="li-table"></td>
+				      <td class="li-table">
+				      		<span ng-if="!data.edit">{{data.member_price}}</span>
+				      		<input ng-if="data.edit" type="text" ng-model = "Pmem_price" ng-change = "Pmem_price_change(Pmem_price)">
+				      </td>
+				      <td class="li-table">
+				      		<span ng-if="!data.edit">{{data.non_member_price}}</span>
+				      		<input ng-if="data.edit" type="text" ng-model = "Pnon_mem_price" ng-change = "Pnon_mem_price_change(Pnon_mem_price)">
+				      </td>
+				      <td class="li-table">
+				      		<span ng-if="!data.edit">{{data.duration}}</span>
+				      		<input ng-if="data.edit" type="text" ng-model = "Pduration" ng-change = "Pduration_change(Pduration)">
+				      </td>
+				      <td class="li-table">
+				      		<span ng-if="!data.edit">{{data.datestart.slice(0,-6)}}</span>
+				      		<input ng-if="data.edit" type="text" ng-model = "Pdatestart" ng-change = "Pdatestart_change(Pdatestart)">
+				      </td>
+				      <td class="li-table">
+				      		<span ng-if="!data.edit">{{data.dateend.slice(0,-6)}}</span>
+				      		<input ng-if="data.edit" type="text" ng-model = "Pdateend" ng-change = "Pdateend_change(Pdateend)">
+				      </td>
+				      <td class="li-table">
+				      		<span ng-if="!data.edit">{{data.active}}</span>
+				      		<input ng-if="data.edit" type="checkbox" ng-model = "Pactive" ng-change = "Pactive_change(Pactive)">
+				      </td>
+				      <td>
+				      	  <button ng-click="editpromo5(data)" type="button" class="btn btn-warning btn-xs">
+				      			<span ng-if="!data.edit">Edit</span>
+				      			<span ng-if="data.edit">Cancel</span>
+				      	  </button>
+				      </td>
+				      <td><button ng-click="savepromo2(data.promoid, Pmem_price, Pnon_mem_price, Pduration, Pdatestart, Pdateend, Pactive, data)" type="button" class="btn btn-success btn-xs" ng-if="data.edit">Save</button></td>
+				    </tr>
+				  </tbody>
+				</table>
+			</div>
+	    </div>
 
   </div>
 

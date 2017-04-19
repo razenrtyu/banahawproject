@@ -115,3 +115,32 @@ input{
 	height:600px !important;
 	width:100%;
 }
+.timeintimeout{
+	background:    #2e8b57;
+	border:        3px solid #fff;
+	border-radius: 10px;
+	box-shadow:    7px 7px 0 0 #ccc;
+	color:         #f3f3f3;
+	display:       inline-block;
+	padding:       40px 60px;
+	font:          normal 700 30px/1 "Overlock", cursive;
+	text-align:    center;
+	text-shadow:   2px 2px 0 #000;
+	margin-top: 100px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.timeintimeout:active {
+  background-color: #4CAF50;
+  box-shadow: 0 5px #666;
+  transform: translateX(4px);
+}
+
+.timeintimeout:disabled {
+  cursor: not-allowed;
+}
+
+.timeintimeout:enabled {
+  cursor: pointer;
+}

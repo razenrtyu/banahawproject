@@ -140,13 +140,13 @@
             </td>
           </tr>
 
-          <tr ng-hide="member">
+<!--           <tr ng-hide="member">
             <td></td>
             <td></td>
             <td>
               <input class="input form-control" class="fillup" type="text" name=""  size="60" ng-model="submember5" placeholder="Members Name">
             </td>
-          </tr>
+          </tr> -->
 
         </tbody>
       </table>
@@ -160,5 +160,5 @@
   margin-top: 50px;
   margin-right: auto;
   margin-left: auto;
-  width: 30% !important;" ng-click="confirm()">
+  width: 30% !important;" ng-click="confirm()" ng-disabled="!name || !selected_attendant">
 </div>

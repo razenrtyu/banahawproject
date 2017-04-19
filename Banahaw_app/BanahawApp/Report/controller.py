@@ -53,6 +53,8 @@ class Reporthandler2(Resource):
 		result = reports.get_reports_data()
 
 		if result:
-			retval = result
+			retval = {
+				'filename': result
+			}
 
 		return retval, status

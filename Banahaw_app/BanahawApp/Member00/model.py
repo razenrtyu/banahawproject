@@ -98,6 +98,16 @@ class Member00_data(Mini_func):
 
 		return retval
 
+	def get_customize_members(self, char):
+		memtype = self.__args.get('membertype', None)
+
+		result = self.__session.query(T_Member00).filter(T_Member00.name.like("%{}%".format(char))
+			).filter(T_Member00.membertype=="{}".format(memtype)).all()
+
+		for d in result:
+			r = d.toJSONExcept()
+			self._retval.append(r)
+
 	def __del__(self):
 		if self.__session is not None:
 			self.__session.close()

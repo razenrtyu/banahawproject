@@ -58,6 +58,15 @@ class T_Healing_Packages(GenericBase,Base):
     non_member_price = Column(Integer)
     duration = Column(Integer)
 
+class T_Facial_Services(GenericBase,Base):
+    __tablename__ = 'facial_services'
+
+    facial_services_id = Column(Integer,primary_key=True)
+    facial_services_name = Column(Integer)
+    member_price = Column(Integer)
+    non_member_price = Column(Integer)
+    duration = Column(Integer)
+
 
 class T_Add_Ons(GenericBase,Base):
     __tablename__ = 'add_ons'
@@ -95,7 +104,7 @@ class T_Attendants01(GenericBase,Base):
     attendantid = Column(Integer)
     timein = Column(String(10))
     timeout = Column(String(10))
-    trandate = Column(Date)
+    trandate = Column(Date, default=datetime.datetime.now().date())
 
 class T_Member00(GenericBase,Base):
     __tablename__ = 'member00'
@@ -179,3 +188,24 @@ class T_Reservation(GenericBase,Base):
     datecreated = Column(Date, default=datetime.datetime.now().date())
     res_date = Column(Date)
     res_time = Column(String(50))
+
+
+class T_Products(GenericBase, Base):
+    __tablename__ = 'products'
+
+    productid = Column(Integer, primary_key=True)
+    productname = Column(String(100))
+    amountpaid = Column(Integer)
+    datepurchased = Column(Date, default=datetime.datetime.now().date())
+
+class T_promos(GenericBase, Base):
+    __tablename__ = 'promos'
+
+    promoid = Column(Integer, primary_key=True)
+    description = Column(String(100))
+    member_price = Column(Integer)
+    non_member_price = Column(Integer)
+    duration = Column(Integer)
+    datestart = Column(Date)
+    dateend = Column(Date)
+    active = Column(Boolean)

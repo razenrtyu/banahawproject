@@ -9,7 +9,7 @@
 <br>
 
 <div id="validation">
-  <input class="input-top form-control" type="text" placeholder="Enter Name of Customer:" autofocus="true" ng-model="name" uib-typeahead="m.name for m in PersonalizedMembers | filter:$viewValue" typeahead-on-select="MemberValidation($item)">
+  <input class="input-top form-control" type="text" placeholder="Enter Name of Customer:" autofocus="true" ng-model="name" uib-typeahead="m.name for m in PersonalizedMembers | filter:$viewValue" typeahead-on-select="MemberValidation($item)" ng-change="Membersquery(name)">
   <br>
 </div>
 
@@ -138,13 +138,13 @@
             </td>
           </tr>
 
-          <tr>
+<!--           <tr>
             <td></td>
             <td></td>
             <td>
               <input class="input form-control" class="fillup" type="text" name=""  size="60" ng-model="submember5" placeholder="Members Name">
             </td>
-          </tr>
+          </tr> -->
 
         </tbody>
               </table>
@@ -156,5 +156,5 @@
   margin-top: 50px;
   margin-right: auto;
   margin-left: 50%;
-  width: 30% !important;" ng-show="upgrade_forms" ng-click="confirm()">
+  width: 30% !important;" ng-show="upgrade_forms" ng-click="confirm()" ng-disabled="!selected_attendant">
 </div>

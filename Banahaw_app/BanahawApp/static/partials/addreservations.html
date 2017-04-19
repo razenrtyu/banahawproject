@@ -9,7 +9,7 @@
 <br>
 
 <div id="validation">
-  <input class="input-top form-control" type="text" placeholder="Enter Name of Customer:" autofocus="true" ng-model="name" uib-typeahead="m.name for m in Members | filter:$viewValue" typeahead-on-select="MemberValidation($item)">
+  <input class="input-top form-control" type="text" placeholder="Enter Name of Customer:" autofocus="true" ng-model="name" uib-typeahead="m.name for m in Members | filter:$viewValue" typeahead-on-select="MemberValidation($item)" ng-change="Membersquery(name)">
   <br>
 </div>
 
@@ -45,16 +45,6 @@
                     <td></td>
                     <td>
                       <input class="input form-control" type="text" name="" ng-model="reservtime" ng-click="gettime()" ng-bind="reservtime" placeholder="Reservation Time">
-                    </td>
-                  </tr>
-
-
-
-                  <tr ng-hide="HideSubmember">
-                    <td>Sub Member Name</td>
-                    <td></td>
-                    <td>
-                      <input class="input-top form-control" type="text" placeholder="Enter Sub Member Name:" autofocus="true" ng-model="sub_name" uib-typeahead="m01.name for m01 in Members01 | filter:$viewValue" typeahead-on-select="OnEntersubmember($item)">
                     </td>
                   </tr>
 
@@ -97,6 +87,15 @@
                       </select></td>
                   </tr>
 
+                  <tr ng-hide="HnSfacialservice">
+                    <td>Facial Services</td>
+                    <td></td>
+                    <td>
+                      <select class="input form-control" ng-model="selectedfservices" ng-change="OnChangeofFacialService(selectedfservices)" ng-options="FS.facial_services_name for FS in FacialServices">
+                        <option value="" disabled>Choose Facial Services Here..</option>
+                      </select></td>
+                  </tr>
+
                   <tr>
                     <td>Add-ons</td>
                     <td></td>
@@ -131,5 +130,5 @@
   margin-top: 50px;
   margin-right: auto;
   margin-left: 50%;
-  width: 30% !important;" ng-show="transac_inputs" ng-click="confirm()">
+  width: 30% !important;" ng-show="transac_inputs" ng-click="confirm()" ng-disabled="(!selected_attendant || !(!selectedpackages || !selectedservices || !selectedfservices) || !reservdate || !reservtime)">
 </div>

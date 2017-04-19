@@ -1,4 +1,5 @@
-from flask import Flask,render_template,send_file
+import os
+from flask import Flask,render_template,send_file, make_response,send_from_directory
 from flask import session
 from flask_restful import Api
 
@@ -19,7 +20,7 @@ connstr = "mysql+pymysql://{user}:{password}@{server}/{db}".format(
 	db=app.config['DB_SCHEMA']
 )
 
-engine = create_engine(connstr)
+engine = create_engine(connstr, pool_size=20, max_overflow=100)
 
 try:
 	engine.connect()
@@ -87,6 +88,17 @@ def user_page():
 
 	return '<h1>Login Required<h1>'
 
+@app.route("/download-reports/<filename>")
+def download_file(filename=None):
+	path = None
+	if filename:
+		print(filename)
+		path = os.path.join(os.getcwd(), 'Reports', filename)
+
+	return send_file(path, as_attachment=True)
+
+
+
 import BanahawApp.Login
 import BanahawApp.RegularServices
 import BanahawApp.HealingPackage
@@ -99,6 +111,9 @@ import BanahawApp.Transaction
 import BanahawApp.Reservations
 import BanahawApp.Attendant01
 import BanahawApp.Report
+import BanahawApp.Product
+import BanahawApp.Promo
+import BanahawApp.FacialServices
 
 BanahawApp.Login.add_route(api)
 BanahawApp.RegularServices.add_route(api)
@@ -112,3 +127,6 @@ BanahawApp.Transaction.add_route(api)
 BanahawApp.Reservations.add_route(api)
 BanahawApp.Attendant01.add_route(api)
 BanahawApp.Report.add_route(api)
+BanahawApp.Product.add_route(api)
+BanahawApp.Promo.add_route(api)
+BanahawApp.FacialServices.add_route(api)

@@ -36,8 +36,7 @@
                     <td>Branch</td>
                     <td></td>
                     <td>
-                      <select class="input form-control" ng-model="selectedbranch" 
-                      ng-change="OnChangeofbranch(selectedbranch)" ng-options="b.branch_name for b in branches">
+                      <select class="input form-control" ng-model="selectedbranch" ng-options="b.branch_name for b in branches">
                         <option value="" disabled>Choose Branch Here..</option>
                       </select>
                     </td>
@@ -58,6 +57,7 @@
                   <td></td>
                   <td>
                   	<select class="input form-control" ng-model="selectedservices" ng-change="OnChangeofRegularServices(selectedservices)" ng-options="RS.service_name for RS in RegularServices">
+                    <option value="" disabled>Choose Regular Services Here..</option>
                     </select></td>
                 </tr>
 
@@ -66,8 +66,27 @@
                   <td></td>
                   <td>
 				          	<select class="input form-control" ng-model="selectedpackages" ng-change="OnChangeofHealingPackages(selectedpackages)" ng-options="HS.package_name for HS in HealingPackages">
+                    <option value="" disabled>Choose Healing Packages Here..</option>
                     </select></td>
                 </tr>
+
+                  <tr ng-hide="HnSfacialservice">
+                    <td>Facial Services</td>
+                    <td></td>
+                    <td>
+                      <select class="input form-control" ng-model="selectedfservices" ng-change="OnChangeofFacialService(selectedfservices)" ng-options="FS.facial_services_name for FS in FacialServices">
+                        <option value="" disabled>Choose Facial Services Here..</option>
+                      </select></td>
+                  </tr>
+
+                  <tr ng-hide="HnSpromoservice">
+                    <td>Promo Services</td>
+                    <td></td>
+                    <td>
+                      <select class="input form-control" ng-model="selectedpservices" ng-change="OnChangeofPromoService(selectedfservices)" ng-options="PS.description for PS in PromoService">
+                        <option value="" disabled>Choose Promo Services Here..</option>
+                      </select></td>
+                  </tr>
 
                 <tr>
                   <td>Add-ons</td>
@@ -76,7 +95,6 @@
                     <oi-select
                       oi-options="AO.add_ons_name for AO in add_ons"
                       ng-model="bundle"
-                      ng-change="OnChangeofAddOns(bundle)"
                       multiple
                       placeholder="Select Add-ons Here..">
                     </oi-select>
@@ -87,7 +105,7 @@
                   <td>Name of Attendant</td>
                   <td></td>
                   <td>
-                    <select class="input form-control" ng-model="selected_attendant" ng-change="OnChangeofAttendant(selected_attendant)" ng-options="Att.attendant_name for Att in attendants">
+                    <select class="input form-control" ng-model="selected_attendant" ng-options="Att.attendant_name for Att in attendants">
                       <option value="" disabled>Choose Attendant Here..</option>
                     </select>
                   </td>
@@ -103,5 +121,5 @@
   margin-top: 50px;
   margin-right: auto;
   margin-left: auto;
-  width: 30% !important;" ng-click="confirm()">
+  width: 30% !important;" ng-click="confirm()" ng-disabled="!selected_attendant && !name && (!selectedpackages || !selectedservices || !selectedfservices)">
 </div>

@@ -34,6 +34,24 @@
                       </select></td>
                   </tr>
 
+                  <tr ng-hide="HnSfacialservice">
+                    <td>Facial Services</td>
+                    <td></td>
+                    <td>
+                      <select class="input form-control" ng-model="selectedservice" ng-options="FS.facial_services_name for FS in FacialServices">
+                        <option value="" disabled>{{selectedservice.facial_services_name}}</option>
+                      </select></td>
+                  </tr>
+
+                  <tr ng-hide="HnSpromoservice">
+                    <td>Promo Services</td>
+                    <td></td>
+                    <td>
+                      <select class="input form-control" ng-model="selectedservice" ng-options="PS.description for PS in PromoService">
+                        <option value="" disabled>{{selectedservice.description}}</option>
+                      </select></td>
+                  </tr>
+
                   <tr>
                     <td>Add-ons</td>
                     <td></td>
@@ -63,5 +81,7 @@
 
 <div class="modal-footer">
   <button class="btn btn-warning" type="button"
-  ng-click="confirm()">Done</button>
+  ng-click="confirm()">Save</button>
+  <button class="btn btn-danger" type="button"
+  ng-click="cancel()">Cancel</button>
 </div>

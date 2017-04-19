@@ -27,9 +27,19 @@ MyApp2.config(['$routeProvider',function($routeProvider){
 		controller : "TransactionController4"
 
 	})
+	.when('/transaction/products',{
+		templateUrl : "partials/products.html",
+		controller : "ProductsController"
+
+	})
 	.when('/member/addmember',{
 		templateUrl : "partials/addmember.html",
 		controller : "AddMemberController"
+
+	})
+	.when('/member/addmember-unpaid',{
+		templateUrl : "partials/addmember-unpaid.html",
+		controller : "AddMemberUPController"
 
 	})
 	.when('/member/upgrademember',{
@@ -39,6 +49,10 @@ MyApp2.config(['$routeProvider',function($routeProvider){
 	.when('/member/viewmembers',{
 		templateUrl : "partials/viewmembers.html",
 		controller : "ViewMemberController"
+	})
+	.when('/member/submembers',{
+		templateUrl : "partials/addsubmember.html",
+		controller : "AddSubmembersController"
 	})
 	.when('/reservations/add-reservation/members',{
 		templateUrl : "partials/addreservations.html",
@@ -64,13 +78,25 @@ MyApp2.config(['$routeProvider',function($routeProvider){
 		templateUrl : "partials/viewattendant.html",
 		controller : "ViewAttendantController"
 	})
-	.when('/attendants/rawtime',{
+	.when('/attendance/timein',{
+		templateUrl : "partials/timein.html",
+		controller : "timeinController"
+	})
+	.when('/attendance/timeout',{
+		templateUrl : "partials/timeout.html",
+		controller : "timeoutController"
+	})
+	.when('/attendance/rawtime',{
 		templateUrl : "partials/rawtime.html",
 		controller : "RawtimeController"
 	})
 	.when('/promos',{
 		templateUrl : "partials/promos.html",
 		controller : "PromoController"
+	})
+	.when('/promos-setup',{
+		templateUrl : "partials/promos2.html",
+		controller : "PromoController2"
 	})
 	.when('/reports/transaction_report',{
 		templateUrl : "partials/report.html",
@@ -127,16 +153,28 @@ MyApp2.controller("DashboardController",['$scope','Requests','$route',function($
 
 
 MyApp2.controller("TransactionController",['$scope','Requests','$uibModal',function ($scope,Requests,$uibModal) {
+
+   	$scope.servicestype = [
+   		"Regular Services",
+   		"Healing Packages",
+   		"Facial Services"
+   	]
+
+	Requests.getPromoService().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.PromoService = data
+
+			if($scope.PromoService.length != 0){
+				$scope.servicestype.push('Promo Services')
+			};
+		};
+	});
 	
-	Requests.getMembers().then(function(response){
-		if (response.status = 'OK'){
-			var data = response.data.data
-			Requests.getMembers01all().then(function(response){
-				if (response.status = 'OK'){
-					var data2 = response.data.data
-					$scope.Members00 = data.concat(data2)
-				};
-			});
+	Requests.getFacialServices().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.FacialServices = data
 		};
 	});
 
@@ -183,52 +221,72 @@ MyApp2.controller("TransactionController",['$scope','Requests','$uibModal',funct
    	// ng-hide
    	$scope.HnSregularservies = true;
    	$scope.HnShealingpackages = true;
-   	$scope.HideSubmember = true;
-
-   	$scope.servicestype = [
-   		"Regular Services",
-   		"Healing Packages"
-   	]
+   	$scope.HnSfacialservice = true;
+   	$scope.HnSpromoservice = true;
 
    	$scope.OnChangeofServices = function(st){
    		if (st == "Regular Services"){
-   			$scope.HnSregularservies = false
-   			$scope.HnShealingpackages = true
+   			$scope.HnSregularservies = false;
+   			$scope.HnShealingpackages = true;
+			$scope.HnSfacialservice = true;
+			$scope.HnSpromoservice = true;
+	   		$scope.selectedpackages = null
+	   		$scope.selectedfservices = null
+	   		$scope.selectedpservices = null
    		}
 		else if (st == "Healing Packages"){
-   			$scope.HnShealingpackages = false
-   			$scope.HnSregularservies = true
+   			$scope.HnShealingpackages = false;
+   			$scope.HnSregularservies = true;
+			$scope.HnSfacialservice = true;
+			$scope.HnSpromoservice = true;
+	   		$scope.selectedservices = null
+	   		$scope.selectedfservices = null
+	   		$scope.selectedpservices = null
    		}
-   		else{
-   			$scope.HnShealingpackages = true
-   			$scope.HnSregularservies = true
+   		else if (st == 'Facial Services'){
+   			$scope.HnSfacialservice = false;
+   			$scope.HnShealingpackages = true;
+   			$scope.HnSregularservies = true;
+   			$scope.HnSpromoservice = true;
+	   		$scope.selectedservices = null
+	   		$scope.selectedpackages = null
+	   		$scope.selectedpservices = null
+   		}
+   		else if (st == 'Promo Services'){
+   			$scope.HnSpromoservice = false;
+   			$scope.HnShealingpackages = true;
+   			$scope.HnSregularservies = true;
+			$scope.HnSfacialservice = true;
+	   		$scope.selectedservices = null
+	   		$scope.selectedpackages = null
+	   		$scope.selectedfservices = null
    		};
    	};
 
    	$scope.OnChangeofRegularServices = function(rs){
    		$scope.selectedpackages = null
+   		$scope.selectedfservices = null
+   		$scope.selectedpservices = null
    	};
 
    	$scope.OnChangeofHealingPackages = function(hs){
    		$scope.selectedservices = null
+   		$scope.selectedfservices = null
+   		$scope.selectedpservices = null
    	};
 
-   	$scope.OnChangeofAddOns = function(hs){
-   		console.log(hs)
+   	$scope.OnChangeofFacialService = function(hs){
+   		$scope.selectedservices = null
+   		$scope.selectedpackages = null
+   		$scope.selectedpservices = null
    	};
 
-   	$scope.OnChangeofbranch = function(hs){
-   		console.log(hs)
+   	$scope.OnChangeofPromoService = function(hs){
+   		$scope.selectedservices = null
+   		$scope.selectedpackages = null
+   		$scope.selectedfservices = null
    	};
 
-   	$scope.OnChangeofAttendant = function(hs){
-   		console.log(hs)
-   	};
-
-   	$scope.OnEntersubmember = function(hs){
-   		console.log(hs)
-		$scope.submembersConfirmed = true;
-   	};
 
    	$scope.MemberValidation = function(hs){
    		$scope.selectedMember = hs
@@ -237,27 +295,29 @@ MyApp2.controller("TransactionController",['$scope','Requests','$uibModal',funct
    		$scope.selectedservicetype =""
    		$scope.selectedservices = ""
    		$scope.selectedpackages = ""
+   		$scope.selectedfservices = ""
    		$scope.bundle = []
    		$scope.selected_attendant = ""
    		$scope.selected_payment = ""
 		$scope.HnShealingpackages = true
 		$scope.HnSregularservies = true
+		$scope.HnSfacialservice = true
 
-		if (hs.membertype){
-			$scope.MembershipType = hs.membertype
-		}else if (hs.relationship){
-			$scope.MembershipType = hs.relationship
+		$scope.MembershipType = hs.membertype
+		$scope.transac_inputs = true;
+   	};
+
+   	$scope.Membersquery = function(char){
+
+   		if(char.length == 2){
+			Requests.customizedGet(char).then(function(response){
+				if (response.status = 'OK'){
+					var data = response.data.data
+					$scope.Members00 = data
+				};
+			});
 		};
 
-   		if ($scope.MembershipType=='Personalized'){
-			$scope.transac_inputs = true;
-			$scope.HideSubmember = true;
-   		};
-
-   		if ($scope.MembershipType=='Family'){
-			$scope.transac_inputs = true;
-			$scope.HideSubmember = false;
-   		};
    	};
 
    	$scope.confirm = function(){
@@ -296,6 +356,20 @@ MyApp2.controller("TransactionController",['$scope','Requests','$uibModal',funct
    				service_price = $scope.selectedpackages.member_price;
 
    				return $scope.selectedpackages.package_name;
+   			};
+   			if ($scope.selectedfservices){
+   				$scope.total_amount += $scope.selectedfservices.member_price;
+   				$scope.Etime += $scope.selectedfservices.duration;
+   				service_price = $scope.selectedfservices.member_price;
+
+   				return $scope.selectedfservices.facial_services_name;
+   			};
+   			if ($scope.selectedpservices){
+   				$scope.total_amount += $scope.selectedpservices.member_price;
+   				$scope.Etime += $scope.selectedpservices.duration;
+   				service_price = $scope.selectedpservices.member_price;
+
+   				return $scope.selectedpservices.description;
    			};
    		};
 
@@ -383,6 +457,30 @@ MyApp2.controller("PopupCont",function($scope,$uibModalInstance,$route,data){
 
 MyApp2.controller("TransactionController2",['$scope','Requests','$uibModal',function ($scope,Requests,$uibModal) {
 
+   	$scope.servicestype = [
+   		"Regular Services",
+   		"Healing Packages",
+   		"Facial Services"
+   	]
+
+	Requests.getPromoService().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.PromoService = data
+
+			if($scope.PromoService.length != 0){
+				$scope.servicestype.push('Promo Services')
+			};
+		};
+	});
+
+	Requests.getFacialServices().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.FacialServices = data
+		};
+	});
+
 	Requests.getMembers().then(function(response){
 		if (response.status = 'OK'){
 			var data = response.data.data
@@ -428,45 +526,70 @@ MyApp2.controller("TransactionController2",['$scope','Requests','$uibModal',func
 	$scope.transac_inputs = true
    	$scope.HnSregularservies = true;
    	$scope.HnShealingpackages = true;
-
-   	$scope.servicestype = [
-   		"Regular Services",
-   		"Healing Packages"
-   	]
+   	$scope.HnSfacialservice = true;
+   	$scope.HnSpromoservice = true;
 
    	$scope.OnChangeofServices = function(st){
    		if (st == "Regular Services"){
-   			$scope.HnSregularservies = false
-   			$scope.HnShealingpackages = true
+   			$scope.HnSregularservies = false;
+   			$scope.HnShealingpackages = true;
+			$scope.HnSfacialservice = true;
+			$scope.HnSpromoservice = true;
+	   		$scope.selectedpackages = null
+	   		$scope.selectedfservices = null
+	   		$scope.selectedpservices = null
    		}
 		else if (st == "Healing Packages"){
-   			$scope.HnShealingpackages = false
-   			$scope.HnSregularservies = true
+   			$scope.HnShealingpackages = false;
+   			$scope.HnSregularservies = true;
+			$scope.HnSfacialservice = true;
+			$scope.HnSpromoservice = true;
+	   		$scope.selectedservices = null
+	   		$scope.selectedfservices = null
+	   		$scope.selectedpservices = null
    		}
-   		else{
-   			$scope.HnShealingpackages = true
-   			$scope.HnSregularservies = true
+   		else if (st == 'Facial Services'){
+   			$scope.HnSfacialservice = false;
+   			$scope.HnShealingpackages = true;
+   			$scope.HnSregularservies = true;
+   			$scope.HnSpromoservice = true;
+	   		$scope.selectedservices = null
+	   		$scope.selectedpackages = null
+	   		$scope.selectedpservices = null
+   		}
+   		else if (st == 'Promo Services'){
+   			$scope.HnSpromoservice = false;
+   			$scope.HnShealingpackages = true;
+   			$scope.HnSregularservies = true;
+			$scope.HnSfacialservice = true;
+	   		$scope.selectedservices = null
+	   		$scope.selectedpackages = null
+	   		$scope.selectedfservices = null
    		};
    	};
 
-   	$scope.OnChangeofRegularServices = function(rs){
+  	$scope.OnChangeofRegularServices = function(rs){
    		$scope.selectedpackages = null
+   		$scope.selectedfservices = null
+   		$scope.selectedpservices = null
    	};
 
    	$scope.OnChangeofHealingPackages = function(hs){
    		$scope.selectedservices = null
+   		$scope.selectedfservices = null
+   		$scope.selectedpservices = null
    	};
 
-   	$scope.OnChangeofAddOns = function(hs){
-   		console.log(hs)
+   	$scope.OnChangeofFacialService = function(hs){
+   		$scope.selectedservices = null
+   		$scope.selectedpackages = null
+   		$scope.selectedpservices = null
    	};
 
-   	$scope.OnChangeofbranch = function(hs){
-   		console.log(hs)
-   	};
-
-   	$scope.OnChangeofAttendant = function(hs){
-   		console.log(hs)
+   	$scope.OnChangeofPromoService = function(hs){
+   		$scope.selectedservices = null
+   		$scope.selectedpackages = null
+   		$scope.selectedfservices = null
    	};
 
    	$scope.confirm = function(){
@@ -491,6 +614,19 @@ MyApp2.controller("TransactionController2",['$scope','Requests','$uibModal',func
    				$scope.Etime += $scope.selectedpackages.duration;
    				service_price = $scope.selectedpackages.non_member_price;
    				return $scope.selectedpackages.package_name;
+   			};
+   			if ($scope.selectedfservices){
+   				$scope.total_amount += $scope.selectedfservices.non_member_price;
+   				$scope.Etime += $scope.selectedfservices.duration;
+   				service_price = $scope.selectedfservices.non_member_price;
+   				return $scope.selectedfservices.facial_services_name
+   			};
+   			if ($scope.selectedpservices){
+   				$scope.total_amount += $scope.selectedpservices.non_member_price;
+   				$scope.Etime += $scope.selectedpservices.duration;
+   				service_price = $scope.selectedpservices.non_member_price;
+
+   				return $scope.selectedpservices.description;
    			};
    		};
 
@@ -541,6 +677,20 @@ MyApp2.controller("TransactionController2",['$scope','Requests','$uibModal',func
 
 
 MyApp2.controller("TransactionController3",['$scope','$route','Requests','$uibModal','$interval',function ($scope,$route,Requests,$uibModal,$interval) {
+
+	Requests.getPromoService().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.PromoService = data
+		};
+	});
+
+	Requests.getFacialServices().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.FacialServices = data
+		};
+	});
 
 	Requests.getOngoingTransaction().then(function(response){
 		if (response.status = 'OK'){
@@ -623,6 +773,12 @@ MyApp2.controller("TransactionController3",['$scope','$route','Requests','$uibMo
    				healpackage: function(){
    					return $scope.HealingPackages
    				},
+   				facialservices: function(){
+   					return $scope.FacialServices
+   				},
+   				promoservice: function(){
+   					return $scope.PromoService
+   				},
    				add_ons: function(){
    					return $scope.add_ons
    				},
@@ -677,11 +833,21 @@ MyApp2.controller("TransactionController3",['$scope','$route','Requests','$uibMo
 }]);
 
 MyApp2.controller('TransactionController4',['$scope','Requests',function($scope,Requests){
+
+	$scope.showtable = true;
+
 	$scope.StartSearch = function(sdate,edate){
 		$scope.history = []
 		Requests.getTransactionbyDate2(sdate,edate).then(function(response){
 			if(response.status = 'OK'){
 				var data = response.data.data
+
+				if (data.length == 0){
+					$scope.showtable = false;
+				}else{
+					$scope.showtable = true;
+				};
+
 				angular.forEach(data, function(value, key){
 					var tempdict = {
 						'date': value.datecreated.substring(0,10),
@@ -700,15 +866,38 @@ MyApp2.controller('TransactionController4',['$scope','Requests',function($scope,
 
 }]);
 
-MyApp2.controller("TransactionModalController",function($scope,$uibModalInstance,$route,Requests,data,regservices,healpackage,add_ons,attendants){
+MyApp2.controller("TransactionModalController",function($scope,$uibModalInstance,$route,Requests,data,regservices,healpackage,facialservices,promoservice,add_ons,attendants){
    	$scope.RegularServices = regservices
    	$scope.HealingPackages = healpackage
+   	$scope.FacialServices = facialservices
+   	$scope.PromoService = promoservice
    	$scope.add_ons = add_ons
    	$scope.attendants = attendants
 
    	$scope.bundle = []
    	$scope.selectedservicetype = data.service_type
    	$scope.transactiontype = data.transaction_type
+
+
+   	$scope.servicestype = [
+   		"Regular Services",
+   		"Healing Packages",
+   		"Facial Services"
+   	]
+
+   	if ($scope.PromoService.length != 0){
+   		var seen_pservices = false
+   		angular.forEach(promoservice, function(value, key){
+   			if(!seen_pservices){
+   				$scope.servicestype.push('Promo Services')
+
+   				if(data.service == value.description){
+   					$scope.selectedservice = value;
+   					seen_pservices = true
+   				};
+   			};
+   		});
+   	};
 
    	var cur_add_ons = data.add_ons.trim()
    	angular.forEach(add_ons,function(value,key){
@@ -737,6 +926,16 @@ MyApp2.controller("TransactionModalController",function($scope,$uibModalInstance
 	   	};
    	});
 
+   	var seen_fservices = false
+   	angular.forEach(facialservices, function(value,key){
+   		if(!seen_fservices){
+	   		if(data.service == value.facial_services_name){
+	   			$scope.selectedservice = value;
+	   			seen_fservices = true
+	   		};
+	   	};
+   	});
+
    	var seen_attendant = false
    	angular.forEach(attendants, function(value,key){
    		if(!seen_attendant){
@@ -747,28 +946,55 @@ MyApp2.controller("TransactionModalController",function($scope,$uibModalInstance
 	   	};
    	});
 
-   	if(data.service_type == "Regular Services"){
+	if (data.service_type == "Regular Services"){
 		$scope.HnSregularservies = false
 		$scope.HnShealingpackages = true
-   	}else{
+		$scope.HnSfacialservice = true
+		$scope.HnSpromoservice = true
+	}else if (data.service_type == "Healing Packages"){
 		$scope.HnShealingpackages = false
-		$scope.HnSregularservies = true  		
-   	}
+		$scope.HnSregularservies = true
+		$scope.HnSfacialservice = true
+		$scope.HnSpromoservice = true
+	}else if (data.service_type == "Facial Services"){
+		$scope.HnSfacialservice = false
+		$scope.HnSregularservies = true
+		$scope.HnShealingpackages = true
+		$scope.HnSpromoservice = true
+	}else if (data.service_type == "Promo Services"){
+		$scope.HnSpromoservice = false
+		$scope.HnSfacialservice = true
+		$scope.HnSregularservies = true
+		$scope.HnShealingpackages = true
+	};
 
-
-   	$scope.servicestype = [
-   		"Regular Services",
-   		"Healing Packages"
-   	]
 
 	$scope.OnChangeofServices = function(){
-		if($scope.selectedservicetype == "Regular Services"){
+		if ($scope.selectedservicetype == "Regular Services"){
 			$scope.HnSregularservies = false
 			$scope.HnShealingpackages = true
-		}else{
+			$scope.HnSfacialservice = true
+			$scope.HnSpromoservice = true
+		}else if ($scope.selectedservicetype == "Healing Packages"){
 			$scope.HnShealingpackages = false
 			$scope.HnSregularservies = true
+			$scope.HnSfacialservice = true
+			$scope.HnSpromoservice = true
+		}else if ($scope.selectedservicetype == "Facial Services"){
+			$scope.HnSfacialservice = false
+			$scope.HnSregularservies = true
+			$scope.HnShealingpackages = true
+			$scope.HnSpromoservice = true
+		}else if ($scope.selectedservicetype == 'Promo Services'){
+			$scope.HnSpromoservice = false
+			$scope.HnSfacialservice = true
+			$scope.HnSregularservies = true
+			$scope.HnShealingpackages = true
 		};
+	};
+
+	$scope.cancel = function(){
+		$uibModalInstance.dismiss('OK');
 	};
 
    	$scope.confirm = function(){
@@ -809,6 +1035,18 @@ MyApp2.controller("TransactionModalController",function($scope,$uibModalInstance
 	   				service_price = $scope.selectedservice.member_price
 	   				return $scope.selectedservice.package_name;
 	   			};
+	   			if ($scope.selectedservicetype == 'Facial Services'){
+	   				$scope.total_amount += $scope.selectedservice.member_price;
+	   				$scope.Etime += $scope.selectedservice.duration;
+	   				service_price = $scope.selectedservice.member_price;
+	   				return $scope.selectedservice.facial_services_name
+	   			};
+	   			if ($scope.selectedservicetype == 'Promo Services'){
+	   				$scope.total_amount += $scope.selectedservice.member_price;
+	   				$scope.Etime += $scope.selectedservice.duration;
+	   				service_price = $scope.selectedservice.member_price;
+	   				return $scope.selectedservice.description;
+	   			};
    			}else if($scope.transactiontype == 'Walk-In'){
    				if($scope.selectedservicetype == 'Regular Services'){
    					$scope.Etime += $scope.selectedservice.duration;
@@ -822,6 +1060,18 @@ MyApp2.controller("TransactionModalController",function($scope,$uibModalInstance
    					service_price = $scope.selectedservice.non_member_price;
    					return $scope.selectedservice.package_name;
    				};
+	   			if ($scope.selectedservicetype == 'Facial Services'){
+	   				$scope.total_amount += $scope.selectedservice.non_member_price;
+	   				$scope.Etime += $scope.selectedservice.duration;
+	   				service_price = $scope.selectedservice.non_member_price;
+	   				return $scope.selectedservice.facial_services_name
+	   			};
+	   			if ($scope.selectedservicetype == 'Promo Services'){
+	   				$scope.total_amount += $scope.selectedservice.non_member_price;
+	   				$scope.Etime += $scope.selectedservice.duration;
+	   				service_price = $scope.selectedservice.non_member_price;
+	   				return $scope.selectedservice.description;
+	   			};
 
    			};
    		};
@@ -829,19 +1079,29 @@ MyApp2.controller("TransactionModalController",function($scope,$uibModalInstance
    		$scope.getAddOns = function(){
    			var addons = ""
    			if($scope.transactiontype == 'Member'){
-	   			angular.forEach($scope.bundle,function(value,key){
-	   				addons += value.add_ons_name+', '
-	   				$scope.Etime += value.duration
-	   				$scope.total_amount += value.member_price
-	   				add_ons_price.push(value.member_price)
-	   			});
+   				if ($scope.bundle){
+		   			angular.forEach($scope.bundle,function(value,key){
+		   				addons += value.add_ons_name+', '
+		   				$scope.Etime += value.duration
+		   				$scope.total_amount += value.member_price
+		   				add_ons_price.push(value.member_price)
+		   			});
+	   			}else{
+	   				addons = ", "
+	   				add_ons_price = []
+	   			};
 	   		}else if($scope.transactiontype == 'Walk-In'){
-	   			angular.forEach($scope.bundle,function(value,key){
-	   				addons += value.add_ons_name+', '
-	   				$scope.Etime += value.duration
-	   				$scope.total_amount += value.non_member_price
-	   				add_ons_price.push(value.non_member_price)
-	   			});
+	   			if ($scope.bundle){
+		   			angular.forEach($scope.bundle,function(value,key){
+		   				addons += value.add_ons_name+', '
+		   				$scope.Etime += value.duration
+		   				$scope.total_amount += value.non_member_price
+		   				add_ons_price.push(value.non_member_price)
+		   			});
+	   			}else{
+	   				addons = ", "
+	   				add_ons_price = []
+	   			};
 	   		};
 
    			return addons.slice(0,-2)
@@ -872,7 +1132,7 @@ MyApp2.controller("TransactionModalController",function($scope,$uibModalInstance
 });
 
 
-MyApp2.controller("AddMemberController",['$scope','Requests','$uibModal',function ($scope,Requests,$uibModal) {
+MyApp2.controller("AddMemberUPController",['$scope','Requests','$uibModal',function ($scope,Requests,$uibModal) {
 
 	Requests.getAttendants().then(function(response){
 		if (response.status = 'OK'){
@@ -958,6 +1218,168 @@ MyApp2.controller("AddMemberController",['$scope','Requests','$uibModal',functio
 							 'membertype': $scope.membertype,
 							 'feedback': $scope.remarks+$scope.txtremarks,
 							 'name': $scope.name,
+	   						 'attendant_name':'Admin',
+	   						 'attendantid':0,
+							 'membershipcost': 300,
+							 'datecreated': '1980-01-01'}
+
+			json_data['title'] = 'add'
+			Requests.postMember00(json_data).then(function(response){
+				if (response.status = 'OK'){
+			   		var modalInstance = $uibModal.open({
+			   			templateUrl: 'partials/modals/Popup2.html',
+			   			controller: 'PopupCont2',
+			   			resolve: {
+			   				data: function(){
+			   					return json_data;
+			   				}
+			   			}
+			   		});
+				};
+			});
+
+		}else{
+
+			var json_data = {'address': $scope.address,
+							 'mobile_number': $scope.mobileNum,
+							 'landline_number': $scope.landlineNum,
+							 'email_address': $scope.email,
+							 'birthdate': $scope.birthdate,
+							 'membertype': $scope.membertype,
+							 'feedback': $scope.remarks+$scope.txtremarks,
+							 'name': $scope.name,
+	   						 'attendant_name':'Admin',
+	   						 'attendantid':0,
+							 'membershipcost': 600,
+							 'datecreated': '1980-01-01'}
+
+			Requests.postMember00(json_data).then(function(response){
+				if (response.status = 'OK'){
+					var data = response.data.data
+					var mem00id = data[0].member00id
+					var submemberlist = [$scope.submember1, $scope.submember2,
+									 $scope.submember3, $scope.submember4]
+
+					json_data['title'] = 'add'
+					json_data['submembers'] = submemberlist
+			   		var modalInstance = $uibModal.open({
+			   			templateUrl: 'partials/modals/Popup2.html',
+			   			controller: 'PopupCont2',
+			   			resolve: {
+			   				data: function(){
+			   					return json_data;
+			   				}
+			   			}
+			   		});
+
+					for(var i =0; i < submemberlist.length; i++){
+						var json_data2 = {'member00id': mem00id,
+										  'relationship': 'Family',
+										  'name': submemberlist[i]}
+
+						Requests.postMember01(json_data2).then(function(response){
+							if (response.status = 'OK'){
+							};
+						});
+
+					};
+
+				};
+			});
+
+
+		};
+	};
+}]);
+
+MyApp2.controller("AddMemberController",['$scope','Requests','$uibModal',function ($scope,Requests,$uibModal) {
+
+	Requests.getAttendants().then(function(response){
+		if (response.status = 'OK'){
+			var data = response.data.data
+			$scope.attendants = data
+		};
+	});
+
+	$scope.personalized = true
+	$scope.member = true
+	$scope.remarkslist = ['Flyers/Brochure', 'Signages/Tarpaulin', 'Facebook/Internet',
+						  'Friends/Relatives','Others']
+	$scope.txtarea = false
+	$scope.remarks = ""
+	$scope.txtremarks = ""
+	$scope.OnChangeofremarks = function(rem){
+		if(rem == 'Others'){
+			$scope.txtarea = true
+			$scope.remarks = ""
+			console.log($scope.rem)
+		}else if(rem == 'Flyers/Brochure'){
+			$scope.txtarea = false
+			$scope.remarks = rem
+		}else if(rem == 'Signages/Tarpaulin'){
+			$scope.txtarea = false
+			$scope.remarks = rem
+		}else if(rem == 'Facebook/Internet'){
+			$scope.txtarea = false
+			$scope.remarks = rem
+		}else if(rem == 'Friends/Relatives'){
+			$scope.txtarea = false
+			$scope.remarks = rem
+		};
+
+	};
+
+	$scope.OnChangeofMembertype = function(membertype){
+
+		if (membertype == "Personalized"){
+			$scope.personalized = false
+			$scope.member = true
+			$scope.selectedbranch = ""
+			$scope.name = ""
+			$scope.birthdate = ""
+			$scope.address = ""
+			$scope.mobileNum = ""
+			$scope.landlineNum = ""
+			$scope.email = ""
+			$scope.submember1 = ""
+			$scope.submember2 = ""
+			$scope.submember3 = ""
+			$scope.submember4 = ""
+			$scope.submember5 = ""
+			$scope.remarks = ""
+			$scope.selectedremarks = ""
+			$scope.txtremarks = ""
+			$scope.selected_attendant = ""
+		};
+
+		if (membertype == "Family"){
+			$scope.member = false
+			$scope.personalized = false
+			$scope.selectedbranch = ""
+			$scope.name = ""
+			$scope.birthdate = ""
+			$scope.address = ""
+			$scope.mobileNum = ""
+			$scope.landlineNum = ""
+			$scope.email = ""
+			$scope.remarks = ""
+			$scope.selectedremarks = ""
+			$scope.txtremarks = ""
+			$scope.selected_attendant = ""
+		};
+
+	};
+
+	$scope.confirm = function(){
+		if($scope.membertype == 'Personalized'){
+			var json_data = {'address': $scope.address,
+							 'mobile_number': $scope.mobileNum,
+							 'landline_number': $scope.landlineNum,
+							 'email_address': $scope.email,
+							 'birthdate': $scope.birthdate,
+							 'membertype': $scope.membertype,
+							 'feedback': $scope.remarks+$scope.txtremarks,
+							 'name': $scope.name,
 	   						 'attendant_name':$scope.selected_attendant.attendant_name,
 	   						 'attendantid':$scope.selected_attendant.attendantid,
 							 'membershipcost': 300}
@@ -996,8 +1418,7 @@ MyApp2.controller("AddMemberController",['$scope','Requests','$uibModal',functio
 					var data = response.data.data
 					var mem00id = data[0].member00id
 					var submemberlist = [$scope.submember1, $scope.submember2,
-									 $scope.submember3, $scope.submember4,
-									 $scope.submember5]
+									 $scope.submember3, $scope.submember4]
 
 					json_data['title'] = 'add'
 					json_data['submembers'] = submemberlist
@@ -1048,7 +1469,6 @@ MyApp2.controller("PopupCont2",function($scope,$uibModalInstance,$route,data){
 		$scope.sub2 = data.submembers[1]
 		$scope.sub3 = data.submembers[2]
 		$scope.sub4 = data.submembers[3]
-		$scope.sub5 = data.submembers[4]
 	};
 
 	$scope.close = function(){
@@ -1070,12 +1490,25 @@ MyApp2.controller("UpgradeMemberController",['$scope','Requests','$uibModal',fun
 		};
 	});
 	
-	Requests.getMembersPersonalized().then(function(response){
-		if (response.status = 'OK'){
-			var data = response.data.data
-			$scope.PersonalizedMembers = data
+	// Requests.getMembersPersonalized().then(function(response){
+	// 	if (response.status = 'OK'){
+	// 		var data = response.data.data
+	// 		$scope.PersonalizedMembers = data
+	// 	};
+	// });
+
+   	$scope.Membersquery = function(char){
+
+   		if(char.length == 2){
+			Requests.customizedPGet(char).then(function(response){
+				if (response.status = 'OK'){
+					var data = response.data.data
+					$scope.PersonalizedMembers = data
+				};
+			});
 		};
-	});
+
+   	};
 
 	$scope.MemberValidation=function(param){
 		$scope.modaldata = param
@@ -1102,14 +1535,12 @@ MyApp2.controller("UpgradeMemberController",['$scope','Requests','$uibModal',fun
 						 'member00id': $scope.Pmem00id,
 						 'upgraded_by': $scope.selected_attendant.attendantid,
 						 'upgraded': date}
-		console.log(json_data)
 
 		Requests.putMember00(json_data).then(function(response){
 			if (response.status = 'OK'){
 
 				var submemberlist = [$scope.submember1, $scope.submember2,
-								 $scope.submember3, $scope.submember4,
-								 $scope.submember5]
+								 $scope.submember3, $scope.submember4]
 
 				$scope.modaldata['title'] = 'upgrade'
 				$scope.modaldata['submembers'] = submemberlist
@@ -1189,10 +1620,10 @@ MyApp2.controller('ViewMemberController', ['$scope','Requests',function($scope,R
 
 MyApp2.controller('ReservationController',['$scope','Requests','$uibModal',function($scope,Requests,$uibModal){
 
-	Requests.getMembers().then(function(response){
-		if (response.status = 'OK'){
-			var data = response.data.data
-			$scope.Members = data
+	Requests.getFacialServices().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.FacialServices = data
 		};
 	});
 
@@ -1239,11 +1670,14 @@ MyApp2.controller('ReservationController',['$scope','Requests','$uibModal',funct
    	// ng-hide
    	$scope.HnSregularservies = true;
    	$scope.HnShealingpackages = true;
+   	$scope.HnSfacialservice = true;
    	$scope.HideSubmember = true;
    	$scope.minutespicker = []
+
    	$scope.servicestype = [
    		"Regular Services",
-   		"Healing Packages"
+   		"Healing Packages",
+   		"Facial Services"
    	]
 
    	$scope.gettime = function(){
@@ -1266,39 +1700,39 @@ MyApp2.controller('ReservationController',['$scope','Requests','$uibModal',funct
    		if (st == "Regular Services"){
    			$scope.HnSregularservies = false
    			$scope.HnShealingpackages = true
+   			$scope.HnSfacialservice = true;
+	   		$scope.selectedpackages = null
+	   		$scope.selectedfservices = null
    		}
 		else if (st == "Healing Packages"){
    			$scope.HnShealingpackages = false
    			$scope.HnSregularservies = true
+   			$scope.HnSfacialservice = true;
+	   		$scope.selectedservices = null
+	   		$scope.selectedfservices = null
    		}
-   		else{
+   		else if (st == "Facial Services"){
+   			$scope.HnSfacialservice = false;
    			$scope.HnShealingpackages = true
    			$scope.HnSregularservies = true
+	   		$scope.selectedservices = null
+	   		$scope.selectedpackages = null
    		};
    	};
 
    	$scope.OnChangeofRegularServices = function(rs){
    		$scope.selectedpackages = null
+   		$scope.selectedfservices = null
    	};
 
    	$scope.OnChangeofHealingPackages = function(hs){
    		$scope.selectedservices = null
+   		$scope.selectedfservices = null
    	};
 
-   	$scope.OnChangeofAddOns = function(hs){
-   		
-   	};
-
-   	$scope.OnChangeofbranch = function(hs){
-   		
-   	};
-
-   	$scope.OnChangeofAttendant = function(hs){
-   		
-   	};
-
-   	$scope.OnEntersubmember = function(hs){
-		$scope.submembersConfirmed = true;
+   	$scope.OnChangeofFacialService = function(hs){
+   		$scope.selectedservices = null
+   		$scope.selectedpackages = null
    	};
 
    	$scope.MemberValidation = function(hs){
@@ -1307,30 +1741,28 @@ MyApp2.controller('ReservationController',['$scope','Requests','$uibModal',funct
    		$scope.selectedbranch = ""
    		$scope.selectedservicetype =""
    		$scope.selectedservices = ""
+   		$scope.selectedfservices = ""
    		$scope.selectedpackages = ""
    		$scope.bundle = []
    		$scope.selected_attendant = ""
    		$scope.selected_payment = ""
 		$scope.HnShealingpackages = true
 		$scope.HnSregularservies = true
+		$scope.HnSfacialservice = true;
 
    		$scope.MembershipType = hs.membertype
-   		if ($scope.MembershipType=='Personalized'){
-			$scope.transac_inputs = true;
-			$scope.HideSubmember = true;
-   		};
+   		$scope.transac_inputs = true;
+   	};
 
-   		if ($scope.MembershipType=='Family'){
-
-			Requests.getMembers01(hs.member00id).then(function(response){
+   	$scope.Membersquery = function(char){
+   		if(char.length == 2){
+			Requests.customizedGet(char).then(function(response){
 				if (response.status = 'OK'){
 					var data = response.data.data
-					$scope.Members01 = data
-					$scope.transac_inputs = true;
-					$scope.HideSubmember = false;
+					$scope.Members = data
 				};
 			});
-   		};
+		};
    	};
 
    	$scope.confirm = function(){
@@ -1366,7 +1798,14 @@ MyApp2.controller('ReservationController',['$scope','Requests','$uibModal',funct
    			if ($scope.selectedpackages){
    				$scope.total_amount += $scope.selectedpackages.member_price;
    				$scope.Etime += $scope.selectedpackages.duration;
+   				service_price = $scope.selectedpackages.member_price;
    				return $scope.selectedpackages.package_name;
+   			};
+   			if ($scope.selectedfservices){
+   				$scope.total_amount += $scope.selectedfservices.member_price;
+   				$scope.Etime += $scope.selectedfservices.duration;
+   				service_price = $scope.selectedfservices.member_price;
+   				return $scope.selectedfservices.facial_services_name
    			};
    		};
 
@@ -1458,10 +1897,10 @@ MyApp2.controller("TimeCont",function($scope,$uibModalInstance,$route,data){
 
 
 MyApp2.controller('ReservationController2',['$scope','Requests','$uibModal',function($scope,Requests,$uibModal){
-	Requests.getMembers().then(function(response){
-		if (response.status = 'OK'){
-			var data = response.data.data
-			$scope.Members = data
+	Requests.getFacialServices().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.FacialServices = data
 		};
 	});
 
@@ -1503,24 +1942,35 @@ MyApp2.controller('ReservationController2',['$scope','Requests','$uibModal',func
 	$scope.transac_inputs = true
    	$scope.HnSregularservies = true;
    	$scope.HnShealingpackages = true;
+   	$scope.HnSfacialservice = true;
 
    	$scope.servicestype = [
    		"Regular Services",
-   		"Healing Packages"
+   		"Healing Packages",
+   		"Facial Services"
    	]
 
    	$scope.OnChangeofServices = function(st){
    		if (st == "Regular Services"){
    			$scope.HnSregularservies = false
    			$scope.HnShealingpackages = true
+   			$scope.HnSfacialservice = true;
+	   		$scope.selectedpackages = null
+	   		$scope.selectedfservices = null
    		}
 		else if (st == "Healing Packages"){
    			$scope.HnShealingpackages = false
    			$scope.HnSregularservies = true
+   			$scope.HnSfacialservice = true;
+	   		$scope.selectedservices = null
+	   		$scope.selectedfservices = null
    		}
-   		else{
+   		else if (st == "Facial Services"){
+   			$scope.HnSfacialservice = false;
    			$scope.HnShealingpackages = true
    			$scope.HnSregularservies = true
+	   		$scope.selectedservices = null
+	   		$scope.selectedpackages = null
    		};
    	};
 
@@ -1542,22 +1992,17 @@ MyApp2.controller('ReservationController2',['$scope','Requests','$uibModal',func
 
    	$scope.OnChangeofRegularServices = function(rs){
    		$scope.selectedpackages = null
+   		$scope.selectedfservices = null
    	};
 
    	$scope.OnChangeofHealingPackages = function(hs){
    		$scope.selectedservices = null
+   		$scope.selectedfservices = null
    	};
 
-   	$scope.OnChangeofAddOns = function(hs){
-   		console.log(hs)
-   	};
-
-   	$scope.OnChangeofbranch = function(hs){
-   		console.log(hs)
-   	};
-
-   	$scope.OnChangeofAttendant = function(hs){
-   		console.log(hs)
+   	$scope.OnChangeofFacialService = function(hs){
+   		$scope.selectedservices = null
+   		$scope.selectedpackages = null
    	};
 
    	$scope.confirm = function(){
@@ -1578,6 +2023,12 @@ MyApp2.controller('ReservationController2',['$scope','Requests','$uibModal',func
    				$scope.Etime += $scope.selectedpackages.duration;
    				service_price = $scope.selectedpackages.non_member_price;
    				return $scope.selectedpackages.package_name;
+   			};
+   			if ($scope.selectedfservices){
+   				$scope.total_amount += $scope.selectedfservices.non_member_price;
+   				$scope.Etime += $scope.selectedfservices.duration;
+   				service_price = $scope.selectedfservices.non_member_price;
+   				return $scope.selectedfservices.facial_services_name;
    			};
    		};
 
@@ -1723,6 +2174,8 @@ MyApp2.controller('NewAttendantController',['$scope','Requests','$route',functio
 }]);
 
 MyApp2.controller('DelAttendantController',['$scope','Requests','$route',function($scope,Requests,$route){
+	$scope.attallowance = ''
+	$scope.attposition = ''
 
 	Requests.getAttendants().then(function(response){
 		if(response.status = 'OK'){
@@ -1774,6 +2227,7 @@ MyApp2.controller('DelAttendantController',['$scope','Requests','$route',functio
 }]);
 
 MyApp2.controller('ViewAttendantController',['$scope','Requests',function($scope,Requests){
+	$scope.showtable = false;
 	$scope.total_on_mem = 0;
 	$scope.total_on_serv = 0;
 	$scope.total_sales = 0;
@@ -1797,11 +2251,18 @@ MyApp2.controller('ViewAttendantController',['$scope','Requests',function($scope
 		Requests.getAttreport(sdate,edate,id).then(function(response){
 			if(response.status = 'OK'){
 				var data = response.data.data
-				$scope.attreports = data
-				$scope.total_on_mem = response.data.total_on_membership;
-				$scope.total_on_serv = response.data.total_on_service;
-				$scope.total_sales = response.data.total_sales;
-				$scope.showtotal = true
+				console.log(data)
+				if(data.length != 0){
+					$scope.showtable = true
+					$scope.showtotal = true
+					$scope.attreports = data
+					$scope.total_on_mem = response.data.total_on_membership;
+					$scope.total_on_serv = response.data.total_on_service;
+					$scope.total_sales = response.data.total_sales;
+				}else{
+					$scope.showtable = false;
+					$scope.showtotal = false;
+				};
 			};
 		});
 	}
@@ -1824,10 +2285,24 @@ MyApp2.controller('PromoController',['$scope','Requests','$route',function($scop
 		};
 	});
 
+	Requests.getFacialServices().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.FacialServices = data
+		};
+	});
+
 	Requests.getAddOns().then(function(response){
 		if (response.status = 'OK'){
 			var data = response.data.data
 			$scope.add_ons = data
+		};
+	});
+
+	Requests.getPromo().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data
+			$scope.promos = data
 		};
 	});
 
@@ -1893,6 +2368,34 @@ MyApp2.controller('PromoController',['$scope','Requests','$route',function($scop
 		};
 	}
 
+	$scope.Fmem_price_change = function(param){
+		$scope.Hmem_price = parseInt(param)
+	};
+
+	$scope.Fnon_mem_price_change = function(param){
+		$scope.Hnon_mem_price = parseInt(param)
+	};
+
+	$scope.Fduration_change = function(param){
+		$scope.Hduration = parseInt(param)
+	};
+
+	$scope.editpromo4 = function(data){
+		if(data.edit){
+			$scope.Hmem_price = undefined
+			$scope.Hnon_mem_price = undefined
+			$scope.Hduration = undefined
+
+			data.edit = false
+		}else{
+			$scope.Hmem_price = data.member_price
+			$scope.Hnon_mem_price = data.non_member_price
+			$scope.Hduration = data.duration
+
+			data.edit = true
+		};
+	}
+
 	$scope.Amem_price_change = function(param){
 		$scope.Amem_price = parseInt(param)
 	};
@@ -1919,7 +2422,81 @@ MyApp2.controller('PromoController',['$scope','Requests','$route',function($scop
 
 			data.edit = true
 		};
-	}
+	};
+
+	$scope.Fmem_price_change = function(param){
+		$scope.Fmem_price = parseInt(param)
+	};
+
+	$scope.Fnon_mem_price_change = function(param){
+		$scope.Fnon_mem_price = parseInt(param)
+	};
+
+	$scope.Fduration_change = function(param){
+		$scope.Fduration = parseInt(param)
+	};
+
+	$scope.editpromo4 = function(data){
+		if(data.edit){
+			$scope.Fmem_price = undefined
+			$scope.Fnon_mem_price = undefined
+			$scope.Fduration = undefined
+
+			data.edit = false
+		}else{
+			$scope.Fmem_price = data.member_price
+			$scope.Fnon_mem_price = data.non_member_price
+			$scope.Fduration = data.duration
+
+			data.edit = true
+		};
+	};
+
+	$scope.Pmem_price_change = function(param){
+		$scope.Pmem_price = parseInt(param)
+	};
+
+	$scope.Pnon_mem_price_change = function(param){
+		$scope.Pnon_mem_price = parseInt(param)
+	};
+
+	$scope.Pduration_change = function(param){
+		$scope.Pduration = parseInt(param)
+	};
+
+	$scope.Pdatestart_change = function(param){
+		$scope.Pdatestart = param
+	};
+
+	$scope.Pdateend_change = function(param){
+		$scope.Pdateend = param
+	};
+
+	$scope.Pactive_change = function(param){
+		$scope.Pactive = param
+	};
+
+	$scope.editpromo5 = function(data){
+		if(data.edit){
+			$scope.Pmem_price = undefined
+			$scope.Pnon_mem_price = undefined
+			$scope.Pduration = undefined
+			$scope.active = undefined
+			$scope.Pdatestart = undefined
+			$scope.Pdateend = undefined
+
+			data.edit = false
+		}else{
+			$scope.Pmem_price = data.member_price
+			$scope.Pnon_mem_price = data.non_member_price
+			$scope.Pduration = data.duration
+			$scope.Pdatestart = data.datestart.slice(0,-6)
+			$scope.Pdateend = data.dateend.slice(0,-6)
+			$scope.Pactive = data.active
+
+			data.edit = true
+		};
+	};
 
 	$scope.savepromo = function(tablename,id,data1,data2,data3,data4,dict){
 		if (tablename == 'regular_services'){
@@ -1977,20 +2554,67 @@ MyApp2.controller('PromoController',['$scope','Requests','$route',function($scop
 				};
 			});
 
+		}else if (tablename == 'facial_services') {
+
+			var json_data = {
+				'facial_services_id': id,
+				'member_price': data1,
+				'non_member_price': data2,
+				'duration': data3
+			}
+
+			Requests.updateAddOns(json_data).then(function(response){
+				if (response.status = 'OK'){
+					data4.member_price = data1;
+					data4.non_member_price = data2;
+					data4.duration = data3;
+					data4.edit = false;
+				};
+			});
+
 		};
+	};
+
+	$scope.savepromo2 = function(promoid, Pmem_price, Pnon_mem_price, Pduration, Pdatestart, Pdateend, Pactive, data){
+		var json_data = {
+			'promoid': promoid,
+			'member_price': Pmem_price,
+			'non_member_price': Pnon_mem_price,
+			'duration': Pduration,
+			'datestart': Pdatestart,
+			'dateend': Pdateend,
+			'active': Boolean(Pactive)
+		}
+
+		Requests.updatePromo(json_data).then(function(response){
+			if (response.status = 'OK'){
+				data.member_price = Pmem_price;
+				data.non_member_price = Pnon_mem_price;
+				data.duration = Pduration;
+				data.datestart = Pdatestart + ' 00:00';
+				data.dateend = Pdateend + ' 00:00';
+				data.active = Pactive;
+				data.edit = false;
+			};
+		});
 	};
 
 }]);
 
-MyApp2.controller('ReportController',['$scope','Requests',function($scope,Requests){
+MyApp2.controller('ReportController',['$scope','Requests', '$window',function($scope,Requests,$window){
 
 	$scope.generate = function(sdate, edate){
-		Requests.getsummaryreport(sdate,edate).then(function(response){
-			if(response.status='OK'){
-				console.log('sample')
 
-			};
-		});
+		if (sdate && edate){
+			
+			Requests.getsummaryreport(sdate,edate).then(function(response){
+				if(response.status='OK'){
+					var data = response.data
+					$window.location.href = 'http://localhost:5000/download-reports/' + data['filename'];
+				};
+			});
+
+		};
 	};
 
 
@@ -2042,12 +2666,32 @@ MyApp2.controller('RawtimeController',['$scope','Requests','$uibModal',function(
 	}
 
 	$scope.confirm = function(trandate,timein,timeout){
-		var json_data = {
-			'attendantid': $scope.attendantid,
-			'timein': convert_time(timein),
-			'timeout': convert_time(timeout),
-			'trandate': trandate
-		}
+		if (!timein) {
+
+			var json_data = {
+				'attendantid': $scope.attendantid,
+				'timeout': convert_time(timeout),
+				'trandate': trandate
+			}
+
+		}else if (!timeout) {
+
+			var json_data = {
+				'attendantid': $scope.attendantid,
+				'timein': convert_time(timein),
+				'trandate': trandate
+			}
+
+		}else {
+
+			var json_data = {
+				'attendantid': $scope.attendantid,
+				'timein': convert_time(timein),
+				'timeout': convert_time(timeout),
+				'trandate': trandate
+			}
+
+		};
 
 		Requests.postRawtime(json_data).then(function(response){
 			if(response.status = 'OK'){
@@ -2056,6 +2700,200 @@ MyApp2.controller('RawtimeController',['$scope','Requests','$uibModal',function(
 		});
 
 	}
+
+}]);
+
+MyApp2.controller('ProductsController',['$scope', 'Requests', function($scope, Requests){
+	$scope.confirm = function(prodname,price){
+
+		var json_data = {
+			'productname': prodname,
+			'amountpaid': parseInt(price)
+		}
+
+		Requests.postProduct(json_data).then(function(response){
+			if(response.status = 'OK'){
+				alert('Successfully Purchased')
+				$scope.productname = ''
+				$scope.amount = ''
+			};
+		});
+	};
+
+}]);
+
+MyApp2.controller('AddSubmembersController',['$scope', 'Requests', function($scope, Requests){
+
+	$scope.inputboxcount = [{}]
+
+   	$scope.Membersquery = function(char){
+
+   		if(char.length == 2){
+			Requests.customizedFGet(char).then(function(response){
+				if (response.status = 'OK'){
+					var data = response.data.data
+					$scope.Familymembers = data
+				};
+			});
+		};
+
+   	};
+
+   	$scope.addfield = function(){
+   		$scope.inputboxcount.push({})
+   	}
+   	$scope.removefield = function(){
+   		var lastitem = $scope.inputboxcount.length - 1
+   		$scope.inputboxcount.splice(lastitem);
+   	}
+
+   	$scope.MemberValidation = function(data){
+   		$scope.member00id = data.member00id
+   		$scope.addmem = true
+   	};
+
+   	var count = $scope.inputboxcount.length
+   	$scope.confirm = function(){
+   		angular.forEach($scope.inputboxcount, function(data, key){
+			var json_data = {'member00id': $scope.member00id,
+			  'relationship': 'Family',
+			  'name': data.value}
+
+			Requests.postMember01(json_data).then(function(response){
+				if (response.status = 'OK'){
+					count -= 1
+					if(!count){
+						alert("Successfully Added")
+					};
+				};
+			});
+
+   		});
+
+   	};
+
+}]);
+
+MyApp2.controller('timeinController',['$scope', 'Requests', function($scope, Requests){
+	$scope.enabledbutton = true
+
+	Number.prototype.pad = function(size) {
+		var s = String(this);
+		while (s.length < (size || 2)) {s = "0" + s;}
+		return s;
+	}
+
+	var get_time = function getCurrentTime() {
+		var currentDate = new Date()
+	    var currentTime;
+	    var hour = currentDate.getHours();
+	    var meridiem = hour >= 12 ? " PM" : " AM";
+	    var new_hour = ((hour + 11) % 12 + 1)
+	    var new_min = currentDate.getMinutes()
+	    currentTime = new_hour.pad() + ":" + new_min.pad() + meridiem;
+	    return currentTime;
+	}
+
+	Requests.getAttendants().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data.data
+			$scope.attendants = data
+		};
+	});
+
+	$scope.attendantvalidation = function(data){
+		$scope.attendantid = data.attendantid
+		$scope.enabledbutton = false
+	}
+
+	$scope.timein = function(){
+		var json_data = {
+			'timein': get_time(),
+			'attendantid': $scope.attendantid
+		}
+
+		Requests.postRawtime(json_data).then(function(response){
+			if(response.status = 'OK'){
+				alert('Successfully Inserted')
+			};
+		});
+	}
+
+}]);
+
+MyApp2.controller('timeoutController',['$scope', 'Requests', function($scope, Requests){
+	$scope.enabledbutton = true
+
+	Number.prototype.pad = function(size) {
+		var s = String(this);
+		while (s.length < (size || 2)) {s = "0" + s;}
+		return s;
+	}
+
+	var get_time = function getCurrentTime() {
+		var currentDate = new Date()
+	    var currentTime;
+	    var hour = currentDate.getHours();
+	    var meridiem = hour >= 12 ? " PM" : " AM";
+	    var new_hour = ((hour + 11) % 12 + 1)
+	    var new_min = currentDate.getMinutes()
+	    currentTime = new_hour.pad() + ":" + new_min.pad() + meridiem;
+	    return currentTime;
+	}
+
+
+	Requests.getAttendants().then(function(response){
+		if(response.status = 'OK'){
+			var data = response.data.data
+			$scope.attendants = data
+		};
+	});
+
+	$scope.attendantvalidation = function(data){
+		$scope.attendantid = data.attendantid
+		$scope.enabledbutton = false
+	}
+
+	$scope.timein = function(){
+		var json_data = {
+			'timeout': get_time(),
+			'attendantid': $scope.attendantid
+		}
+
+		Requests.postRawtime(json_data).then(function(response){
+			if(response.status = 'OK'){
+				alert('Successfully Inserted')
+			};
+		});
+	}	
+	
+
+}]);
+
+MyApp2.controller('PromoController2',['$scope', 'Requests', function($scope, Requests){
+
+	$scope.confirm = function(){
+		var json_data = {
+			'description': $scope.promoname,
+			'member_price': $scope.mem_price,
+			'non_member_price': $scope.non_mem_price,
+			'duration': $scope.duration,
+			'datestart': $scope.startdate,
+			'dateend': $scope.enddate
+		}
+
+		Requests.makePromo(json_data).then(function(response){
+			if(response.status = 'OK'){
+				alert('Successfully Inserted')
+				$scope.promoname = ''
+				$scope.mem_price = ''
+				$scope.non_mem_price = ''
+				$scope.startdate = ''
+				$scope.enddate = ''
+				$scope.duration = ''
+			};
+		});
+	};
 
 }]);
 
@@ -2089,6 +2927,12 @@ MyApp2.factory('Requests',function($http){
 				data: param,
 				});
 			},
+			getFacialServices:function(){
+				return $http({
+				method:'GET',
+				url:'http://localhost:5000/facialservices',
+				});
+			},
 			getAddOns:function(){
 				return $http({
 				method:'GET',
@@ -2099,6 +2943,28 @@ MyApp2.factory('Requests',function($http){
 				return $http({
 				method:'PUT',
 				url:'http://localhost:5000/AddOns',
+				headers: {'Content-type': 'application/json'},
+				data: param,
+				});
+			},
+			getPromo:function(){
+				return $http({
+				method:'GET',
+				url:'http://localhost:5000/promos',
+				});
+
+			},
+			getPromoService:function(){
+				return $http({
+				method:'GET',
+				url:'http://localhost:5000/promos?active=1&curdate=1',
+				});
+
+			},
+			updatePromo:function(param){
+				return $http({
+				method:'PUT',
+				url:'http://localhost:5000/promos',
 				headers: {'Content-type': 'application/json'},
 				data: param,
 				});
@@ -2263,6 +3129,14 @@ MyApp2.factory('Requests',function($http){
 				data: param,
 				});
 			},
+			postProduct:function(param){
+				return $http({
+				method:'POST',
+				url:'http://localhost:5000/products',
+				headers: {'Content-type': 'application/json'},
+				data: param,
+				});
+			},
 			delAttendant:function(id){
 				return $http({
 				method:'DELETE',
@@ -2289,11 +3163,30 @@ MyApp2.factory('Requests',function($http){
 				url:'http://localhost:5000/report-summary'+'?from='+ds+'&'+'to='+de,
 				});
 			},
-			generatesummaryreport:function(ds,de){
+			customizedGet:function(char){
 				return $http({
 				method:'GET',
-				url:'http://localhost:5000/download-reports',
-				data: 'asd'
+				url:'http://localhost:5000/member01/' + char,
+				});
+			},
+			customizedPGet:function(char){
+				return $http({
+				method:'GET',
+				url:'http://localhost:5000/member00/' + char +'?membertype=Personalized',
+				});
+			},
+			customizedFGet:function(char){
+				return $http({
+				method:'GET',
+				url:'http://localhost:5000/member00/' + char +'?membertype=Family',
+				});
+			},
+			makePromo:function(json_data){
+				return $http({
+				method:'POST',
+				url:'http://localhost:5000/promos',
+				headers: {'Content-type': 'application/json'},
+				data: json_data
 				});
 			}
 		}

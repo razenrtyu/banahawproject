@@ -31,9 +31,9 @@ class Attendants01(Resource):
 		status = 201
 
 		args_list = [('attendantid',int,'json',None,True),
-					 ('timein',str,'json',None,True),
-					 ('timeout',str,'json',None,True),
-					 ('trandate',lambda x: datetime.datetime.strptime(x, '%d-%B-%Y'),'json',None,True)]
+					 ('timein',str,'json',None,False),
+					 ('timeout',str,'json',None,False),
+					 ('trandate',lambda x: datetime.datetime.strptime(x, '%d-%B-%Y'),'json',datetime.datetime.now().date(),False)]
 
 		for args in args_list:
 			self.__reqparser.add_argument(args[0],type=args[1],location=args[2],default=args[3],required=args[4])

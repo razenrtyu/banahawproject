@@ -9,7 +9,7 @@
 <br>
 
 <div id="validation">
-  <input class="input-top form-control" type="text" placeholder="Enter Name of Customer:" autofocus="true" ng-model="name" uib-typeahead="m.name for m in Members00 | filter:$viewValue" typeahead-on-select="MemberValidation($item)">
+  <input class="input-top form-control" type="text" placeholder="Enter Name of Customer:" autofocus="true" ng-model="name" uib-typeahead="m.name for m in Members00 | filter:$viewValue" typeahead-on-select="MemberValidation($item)" ng-change="Membersquery(name)">
   <br>
 </div>
 
@@ -29,15 +29,6 @@
 <table class="table table-striped">
                 
                 <tbody>
-
-                  <tr ng-hide="HideSubmember">
-<!--                     <td>Sub Member Name</td>
-                    <td></td>
-                    <td>
-                      <input class="input-top form-control" type="text" placeholder="Enter Sub Member Name:" autofocus="true" ng-model="sub_name" uib-typeahead="m01.name for m01 in Members01 | filter:$viewValue" typeahead-on-select="OnEntersubmember($item)">
-                    </td>
-                  </tr> -->
-
                   <tr>
                     <td>Branch</td>
                     <td></td>
@@ -77,6 +68,24 @@
                       </select></td>
                   </tr>
 
+                  <tr ng-hide="HnSfacialservice">
+                    <td>Facial Services</td>
+                    <td></td>
+                    <td>
+                      <select class="input form-control" ng-model="selectedfservices" ng-change="OnChangeofFacialService(selectedfservices)" ng-options="FS.facial_services_name for FS in FacialServices">
+                        <option value="" disabled>Choose Facial Services Here..</option>
+                      </select></td>
+                  </tr>
+
+                  <tr ng-hide="HnSpromoservice">
+                    <td>Promo Services</td>
+                    <td></td>
+                    <td>
+                      <select class="input form-control" ng-model="selectedpservices" ng-change="OnChangeofPromoService(selectedfservices)" ng-options="PS.description for PS in PromoService">
+                        <option value="" disabled>Choose Promo Services Here..</option>
+                      </select></td>
+                  </tr>
+
                   <tr>
                     <td>Add-ons</td>
                     <td></td>
@@ -95,7 +104,7 @@
                     <td>Name of Attendant</td>
                     <td></td>
                     <td>
-                      <select class="input form-control" ng-model="selected_attendant" ng-change="OnChangeofAttendant(selected_attendant)" ng-options="Att.attendant_name for Att in attendants">
+                      <select class="input form-control" ng-model="selected_attendant" ng-options="Att.attendant_name for Att in attendants">
                         <option value="" disabled>Choose Attendant Here..</option>
                       </select>
                     </td>
@@ -111,5 +120,5 @@
   margin-top: 50px;
   margin-right: auto;
   margin-left: 50%;
-  width: 30% !important;" ng-show="transac_inputs" ng-click="confirm()">
+  width: 30% !important;" ng-show="transac_inputs" ng-click="confirm()" ng-disabled="!selected_attendant && (!selectedpackages || !selectedservices || !selectedfservices || !selectedpservices)">
 </div>
